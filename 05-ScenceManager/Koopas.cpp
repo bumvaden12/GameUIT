@@ -32,8 +32,8 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	//
 	// TO-DO: make sure Koopas can interact with the world and to each of them too!
 	// 
-	if(state != KOOPAS_STATE_DIE)
-	vy += KOOPAS_GRAVITY*dt;
+	if(! beingcarried)
+	vy+= KOOPAS_GRAVITY*dt;
 	
 
 
@@ -106,7 +106,7 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_DIE:
-		y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE +1;
+		/*y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE +1;*/
 		vx = 0;
 		vy = 0;
 		break;

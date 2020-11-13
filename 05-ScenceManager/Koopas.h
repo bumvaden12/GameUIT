@@ -28,6 +28,7 @@ class CKoopas : public CGameObject
 	
 public:
 	bool beingcarried = false;
+	
 	CKoopas();
 	virtual void SetState(int state);
 	void BeingCarry(LPGAMEOBJECT user);

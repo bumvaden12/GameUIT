@@ -376,6 +376,12 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_DOWN:
 		mario->SetState(MARIO_STATE_UNCROUCH);
 		break;
+	case DIK_D:
+		if (mario->isCarrying)
+		{
+			mario->isKicking = true;
+		}
+
 	}
 }
 
