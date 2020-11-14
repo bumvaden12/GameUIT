@@ -4,7 +4,7 @@
 
 #define KOOPAS_WALKING_SPEED 0.03f
 #define KOOPAS_SPINNING_SPEED 0.1f
-#define KOOPAS_GRAVITY			0.0015f
+#define KOOPAS_GRAVITY			0.002f
 
 #define KOOPAS_BBOX_WIDTH 16
 #define KOOPAS_BBOX_HEIGHT 26	
@@ -28,7 +28,7 @@ class CKoopas : public CGameObject
 	
 public:
 	bool beingcarried = false;
-	
+	void GetHit();
 	CKoopas();
 	virtual void SetState(int state);
 	void BeingCarry(LPGAMEOBJECT user);

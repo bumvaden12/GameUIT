@@ -130,6 +130,7 @@
     <ClCompile Include="InviBrick.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="platform.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Tail.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="InviBrick.h" />
     <ClInclude Include="Koopas.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Tail.h" />
     <ClInclude Include="Utils.h" />

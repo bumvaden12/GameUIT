@@ -19,6 +19,7 @@ class CGoomba : public CGameObject
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
 	virtual void Render();
 	void GetHit();
+	int last_vx;
 public: 	
 	CGoomba();
 	virtual void SetState(int state);

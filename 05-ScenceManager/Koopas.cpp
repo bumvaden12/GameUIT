@@ -1,10 +1,12 @@
 #include "Koopas.h"
 #include "Brick.h"
 #include "Mario.h"
+#include "platform.h"
 
 CKoopas::CKoopas()
 {
 	SetState(KOOPAS_STATE_WALKING);
+	isKillable = true;
 }
 
 void CKoopas::GetBoundingBox(float &left, float &top, float &right, float &bottom)
@@ -36,7 +38,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	vy+= KOOPAS_GRAVITY*dt;
 	
 
-
+	if (vx < 0 && x < 0) {
+		x = 0; vx = -vx;
+	}
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
@@ -76,8 +80,33 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 				if (e->nx != 0)
 				{
-					if (nx < 0)nx = 1;
-					else nx = -1;
+					if (nx < 0)
+					{
+						nx = 1;
+						/*vx = KOOPAS_SPINNING_SPEED * dt;*/
+					}
+					else
+					{
+						nx = -1;
+					/*	vx = -KOOPAS_SPINNING_SPEED * dt;*/
+					}
+				}
+			}
+			if (dynamic_cast<platform*>(e->obj))
+			{
+				platform* Platform = dynamic_cast<platform*>(e->obj);
+				if (e->nx != 0)
+				{
+					if (nx < 0)
+					{
+						nx = 1;
+					/*	vx = KOOPAS_SPINNING_SPEED * dt;*/
+					}
+					else
+					{
+						nx = -1;
+					/*	vx = -KOOPAS_SPINNING_SPEED * dt;*/
+					}
 				}
 			}
 		}
@@ -125,7 +154,19 @@ void CKoopas::SetState(int state)
 }
 void CKoopas::BeingCarry(LPGAMEOBJECT user)
 {
+	SetState(KOOPAS_STATE_DIE);
 	if (user->nx > 0)
 		SetPosition(user->x + 20, user->y+2);
 	else SetPosition(user->x-3, user->y+2);
+}
+void CKoopas::GetHit()
+{
+	if (state == KOOPAS_STATE_DIE)
+	{
+		vy =	- 5 *dt;
+	}
+	else if (state != KOOPAS_STATE_DIE)
+	{
+		state = KOOPAS_STATE_DIE;
+	}
 }

@@ -9,6 +9,7 @@
 #include "Portal.h"
 #include "InviBrick.h"
 #include "Koopas.h"
+#include "platform.h"
 CMario::CMario(float x, float y) : CGameObject()
 {
 	level = MARIO_LEVEL_FIRE;
@@ -184,7 +185,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					allow_jump = false;
 				}
 			}
-
+			if (dynamic_cast<platform*>(e->obj))
+			{
+				platform* Platform = dynamic_cast<platform*>(e->obj);
+				if (e->ny < 0)
+				{
+					onground = true;
+					allow_fly = false;
+					jumpflag = false;
+					isdropping = false;
+					istaildropping = false;
+				}
+				if (e->ny > 0)
+				{
+					allow_jump = false;
+				}
+			}
 			if (dynamic_cast<CGoomba *>(e->obj)) // if e->obj is Goomba 
 			{
 				
@@ -228,7 +244,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						}
 					}
 				}
-			} // if Goomba
+			} 
 			if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Goomba 
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
@@ -247,6 +263,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					isCarrying = true;
 					koopas_carry = koopas;
 					koopas_carry->beingcarried = true;
+					isKicking1 = true;
+					if (nx < 0)
+					{
+						ResetAni(MARIO_ANI_FIRE_KICK_LEFT);
+						isWaitingForAni = true;
+					}
+					else
+					{
+						ResetAni(MARIO_ANI_FIRE_KICK_RIGHT);
+						isWaitingForAni = true;
+					}
 				}
 				if (e->ny < 0 && koopas->GetState()==KOOPAS_STATE_SPINNING)
 				{
@@ -314,10 +341,10 @@ void CMario::Render()
 	else
 		if (level == MARIO_LEVEL_BIG)
 		{
-			if (isCarrying && state == MARIO_STATE_IDLE && nx > 0)ani = MARIO_ANI_BIG_CARRY_RIGHT;
-			else if (isCarrying && state == MARIO_STATE_IDLE && nx < 0)ani = MARIO_ANI_BIG_CARRY_LEFT;
-			else if (isCarrying && state == MARIO_STATE_WALKING_RIGHT && nx > 0)ani = MARIO_ANI_BIG_CARRY_MOVING_RIGHT;
+			if (isCarrying && state == MARIO_STATE_WALKING_RIGHT && nx > 0)ani = MARIO_ANI_BIG_CARRY_MOVING_RIGHT;
 			else if (isCarrying && state == MARIO_STATE_WALKING_LEFT && nx < 0)ani = MARIO_ANI_BIG_CARRY_MOVING_LEFT;
+			else if (isCarrying && state == MARIO_STATE_IDLE && nx > 0)ani = MARIO_ANI_BIG_CARRY_RIGHT;
+			else if (isCarrying && state == MARIO_STATE_IDLE && nx < 0)ani = MARIO_ANI_BIG_CARRY_LEFT;
 			else if (state == MARIO_STATE_STOP && vx < 0) ani = MARIO_ANI_BIG_STOP_LEFT;
 			else if (state == MARIO_STATE_STOP && vx > 0) ani = MARIO_ANI_BIG_STOP_RIGHT;
 			else if (vx > 0)
@@ -336,6 +363,10 @@ void CMario::Render()
 			else if (isCarrying && state == MARIO_STATE_IDLE && nx < 0)ani = MARIO_ANI_FIRE_CARRY_LEFT;
 			else if (isCarrying && state == MARIO_STATE_WALKING_RIGHT && nx > 0)ani = MARIO_ANI_FIRE_CARRY_MOVING_RIGHT;
 			else if (isCarrying && state == MARIO_STATE_WALKING_LEFT && nx < 0)ani = MARIO_ANI_FIRE_CARRY_MOVING_LEFT;
+			else if (isKicking1 && nx < 1)
+				ani = MARIO_ANI_FIRE_KICK_LEFT;
+			else if (isKicking1 && nx > 1)
+				ani = MARIO_ANI_FIRE_KICK_RIGHT;
 			else if (state == MARIO_STATE_FIRE_ATTACK && nx > 0)ani = MARIO_ANI_FIRE_CARRY_RIGHT;
 			else if (state == MARIO_STATE_FIRE_ATTACK && nx < 0)ani = MARIO_ANI_FIRE_CARRY_LEFT;
 			else if (state == MARIO_STATE_RUNNING_LEFT && nx < 0)ani = MARIO_ANI_FIRE_RUNNING_LEFT;
@@ -388,8 +419,6 @@ void CMario::Render()
 			else if (isCarrying && state == MARIO_STATE_IDLE && nx < 0)ani = MARIO_ANI_TAIL_CARRY_LEFT;
 			else if (isCarrying && state == MARIO_STATE_WALKING_RIGHT && nx > 0)ani = MARIO_ANI_TAIL_CARRY_MOVING_RIGHT;
 			else if (isCarrying && state == MARIO_STATE_WALKING_LEFT && nx < 0)ani = MARIO_ANI_TAIL_CARRY_MOVING_LEFT;
-			else if (state == MARIO_STATE_FLYING && nx < 0)ani = MARIO_ANI_TAIL_FLYING_LEFT;
-			else if (state == MARIO_STATE_FLYING && nx < 0)ani = MARIO_ANI_TAIL_FLYING_LEFT;
 			else if (state == MARIO_STATE_RUNNING_LEFT && nx < 0)ani = MARIO_ANI_TAIL_RUNNING_LEFT;
 			else if (state == MARIO_STATE_RUNNING_RIGHT && nx > 0)ani =MARIO_ANI_TAIL_RUNNING_RIGHT;
 			else if (istaildropping && nx < 0)ani = MARIO_ANI_TAIL_SLOW_DROP_LEFT;
@@ -398,6 +427,10 @@ void CMario::Render()
 			else if (allow_jump && nx < 0)ani = MARIO_ANI_TAIL_JUMP_LEFT;
 			else if (isdropping&&!onground && nx < 0)ani = MARIO_ANI_TAIL_DROP_LEFT;
 			else if (isdropping &&!onground &&nx > 0)ani = MARIO_ANI_TAIL_DROP_RIGHT;
+			else if (maxspeed && !onground && nx < 0)
+				ani = MARIO_ANI_TAIL_FLYING_LEFT;
+			else if (maxspeed && !onground && nx < 0)
+				ani = MARIO_ANI_TAIL_FLYING_RIGHT;
 			else if (state == MARIO_STATE_STOP && nx < 0) ani = MARIO_ANI_TAIL_STOP_LEFT;
 			else if (state == MARIO_STATE_STOP && nx > 0) ani = MARIO_ANI_TAIL_STOP_RIGHT;
 			else if (state == MARIO_STATE_CROUCH && nx < 0) ani = MARIO_ANI_TAIL_CROUCH_LEFT;
@@ -679,11 +712,21 @@ void CMario::CheckForAniEnd()
 					isWaitingForAni = false;
 
 				}
+				if (animation_set->at(MARIO_ANI_FIRE_KICK_RIGHT)->IsOver())
+				{
+					isWaitingForAni = false;
+				}
+				isKicking1 = false;
 			}
 			else if (nx == -1)
 			{
 				if (animation_set->at(MARIO_ANI_FIRE_CARRY_LEFT)->IsOver())
 					isWaitingForAni = false;
+				if (animation_set->at(MARIO_ANI_FIRE_KICK_LEFT)->IsOver())
+				{
+					isWaitingForAni = false;
+				}
+				isKicking1 = false;
 			}
 		}
 	}

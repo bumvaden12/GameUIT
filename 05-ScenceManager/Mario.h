@@ -99,6 +99,8 @@
 #define MARIO_ANI_BIG_CARRY_MOVING_RIGHT	56
 #define MARIO_ANI_TAIL_CARRY_LEFT			57
 #define MARIO_ANI_TAIL_CARRY_RIGHT			58
+#define MARIO_ANI_FIRE_KICK_LEFT			59
+#define MARIO_ANI_FIRE_KICK_RIGHT			60
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
@@ -138,6 +140,7 @@ class CMario : public CGameObject
 	float stand_y = 0;
 public:bool isCarrying = false;
 public:bool isKicking = false;
+	bool  isKicking1 = false;
 public: bool isWaitingForAni = false;
 public:	float drop_y = 0;
 	 float fly_y = 0;

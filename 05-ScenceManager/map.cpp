@@ -57,11 +57,7 @@ void TileMap::Load()
 		for (int j = 0; j < num_col_on_tilemap; j++)
 			fs >> tilemap[i][j];
 	}
-
-
 	fs.close();
-
-
 }
 
 

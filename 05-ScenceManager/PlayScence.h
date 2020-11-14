@@ -9,7 +9,7 @@
 #include "Koopas.h"
 #include "map.h"
 #include "InviBrick.h"
-#define FIRE_AMOUNT 2
+#include "platform.h"
 
 class CPlayScene: public CScene
 {
