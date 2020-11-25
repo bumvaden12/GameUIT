@@ -6,6 +6,7 @@
 #include "InviBrick.h"
 #include "Brick.h"
 #include "Game.h"
+#include "platform.h"
 fire::fire(float x, float y):CGameObject()
 {
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
@@ -156,6 +157,22 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						y += dy;
 					}
 				}
+				if (dynamic_cast<platform*>(e->obj))
+				{
+					if (e->nx != 0)
+					{
+						state = FIRE_STATE_WAITING;
+					}
+					if (e->ny < 0)
+					{
+
+					}
+					if (e->ny == 1)
+					{
+						y += dy;
+					}
+				}
+				///////
 				else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas
 				{
 					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
