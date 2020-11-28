@@ -32,10 +32,10 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	CGameObject::Update(dt);
 	Fire1->Update(dt, coObjects);
 	Fire2->Update(dt, coObjects);
-
 	// Simple fall down
 	//vy += MARIO_GRAVITY*dt;
-
+	if (state == MARIO_STATE_TAIL_ATTACK)
+		tail->Update(dt, coObjects);
 	// jump
 	if (allow_jump)
 	{
@@ -220,11 +220,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					{
 						if (goomba->GetState()!=GOOMBA_STATE_DIE)
 						{
-							if (level == MARIO_LEVEL_TAIL && state == MARIO_STATE_TAIL_ATTACK)
+							/*if (level == MARIO_LEVEL_TAIL && state == MARIO_STATE_TAIL_ATTACK)
 							{
 								goomba->SetState(GOOMBA_STATE_DIE);
-							}
-							else if (level == MARIO_LEVEL_TAIL)
+							}*/
+							 if (level == MARIO_LEVEL_TAIL)
 							{
 								level = MARIO_LEVEL_BIG;
 								StartUntouchable();
@@ -297,7 +297,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						{
 							if (level == MARIO_LEVEL_TAIL && state == MARIO_STATE_TAIL_ATTACK)
 							{
-								koopas->SetState(KOOPAS_STATE_DIE);
+								koopas->GetHit();
 							}
 							else if (level == MARIO_LEVEL_TAIL)
 							{
@@ -458,7 +458,7 @@ void CMario::Render()
 	else animation_set->at(ani)->Render(x+10, y, alpha);
 	Fire1->Render();
 	Fire2->Render();
-
+	tail->Render();
 	//RenderBoundingBox();
 }
 

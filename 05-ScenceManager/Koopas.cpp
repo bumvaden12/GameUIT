@@ -118,9 +118,15 @@ void CKoopas::Render()
 {
 	int ani = -1;
 	if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
+		if (flip)
+			ani = KOOPAS_ANI_DIE_UP;
+		else ani = KOOPAS_ANI_DIE;
 	}
-	else if (state == KOOPAS_STATE_SPINNING) ani = KOOPAS_ANI_SPINNING;
+	else if (state == KOOPAS_STATE_SPINNING)
+	{
+		if (flip) ani = KOOPAS_ANI_SPINING_UP;
+		else  ani = KOOPAS_ANI_SPINNING;
+	}
 	else if (vx > 0) ani = KOOPAS_ANI_WALKING_RIGHT;
 	else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
 
@@ -161,6 +167,8 @@ void CKoopas::BeingCarry(LPGAMEOBJECT user)
 }
 void CKoopas::GetHit()
 {
+	flip = true;
+	state = KOOPAS_STATE_DIE;
 	if (state == KOOPAS_STATE_DIE)
 	{
 		vy =	- 5 *dt;

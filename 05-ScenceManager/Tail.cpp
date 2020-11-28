@@ -13,9 +13,9 @@ void CTail::Attack(LPGAMEOBJECT user)
 	float obj_x, obj_y;
 	user->GetPosition(obj_x, obj_y);
 	if (user->nx == 1)
-		SetPosition(obj_x, obj_y);
+		SetPosition(obj_x + MARIO_BIG_BBOX_WIDTH*2, obj_y+12);
 	else
-		SetPosition(obj_x + MARIO_BIG_BBOX_WIDTH, obj_y);
+		SetPosition(obj_x , obj_y+12);
 	nx = user->nx;
 }
 void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -24,10 +24,13 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		LPGAMEOBJECT obj = coObjects->at(i);
 		if (obj->isKillable)
-			if (this->IsColidingAABB(obj) && animation_set->at(state)->IsRenderingLastFrame())
+		/*	DebugOut(L"obj %d \n", obj);*/
+			if (this->IsColidingAABB(obj)/* && animation_set->at(MARIO_ANI_TAIL_ATTACK_RIGHT)->IsRenderingLastFrame()*/)
 			{
+				
 				obj->GetHit();
 			}
+
 	}
 }
 void CTail::SetPosition(float x, float y)

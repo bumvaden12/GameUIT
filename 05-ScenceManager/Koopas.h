@@ -19,12 +19,15 @@
 #define KOOPAS_ANI_WALKING_RIGHT 1
 #define KOOPAS_ANI_DIE 2
 #define KOOPAS_ANI_SPINNING	3
+#define KOOPAS_ANI_DIE_UP 4
+#define KOOPAS_ANI_SPINING_UP 5
 class CKoopas : public CGameObject
 {
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects);
 	virtual void Render();
 	int last_vx;
+	bool flip = false;
 	
 public:
 	bool beingcarried = false;
