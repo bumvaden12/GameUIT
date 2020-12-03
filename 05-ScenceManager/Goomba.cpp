@@ -25,19 +25,26 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 
 	
 	vy += KOOPAS_GRAVITY * dt;
-
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
-	}
-
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}
-
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	coEvents.clear();
-	CalcPotentialCollisions(coObjects, coEvents);
+	if (state != GOOMBA_STATE_DIE)
+	{
+		if (vx < 0 && x < 0) {
+			x = 0; vx = -vx;
+		}
+
+		if (vx > 0 && x > 290) {
+			x = 290; vx = -vx;
+		}
+		CalcPotentialCollisions(coObjects, coEvents);
+	}
+	else
+	{
+		vx = 0;
+	}
+	
+	
 	if (coEvents.size() == 0)
 	{
 		x += dx;

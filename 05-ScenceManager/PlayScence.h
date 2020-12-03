@@ -10,6 +10,8 @@
 #include "map.h"
 #include "InviBrick.h"
 #include "platform.h"
+#include "QuestionBrick.h"
+#include "ShinyBrick.h"
 
 class CPlayScene: public CScene
 {

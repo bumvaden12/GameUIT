@@ -36,6 +36,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_INVIBRICK	4
 #define OBJECT_TYPE_FIRE	5
 #define OBJECT_TYPE_PLATFORM	6
+#define OBJECT_TYPE_QBRICK 7
+#define OBJECT_TYPE_SBRICK 8
 #define OBJECT_TYPE_PORTAL	50
 
 #define MAX_SCENE_LINE 1024
@@ -182,6 +184,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_INVIBRICK: obj = new InviBrick(); break;
 	case OBJECT_TYPE_FIRE:	obj = new fire(); break;
 	case OBJECT_TYPE_PLATFORM: obj = new platform(); break;
+	case OBJECT_TYPE_QBRICK: obj = new QBrick(); break;
+	case OBJECT_TYPE_SBRICK: obj = new SBrick(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());

@@ -67,7 +67,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
-		if (nx != 0) vx = last_vx;
+		if (nx != 0)
+		{
+			vx = -vx;
+
+		}
 		if (ny != 0)
 		{
 			vy = 0;

@@ -132,6 +132,8 @@
     <ClCompile Include="map.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="QuestionBrick.cpp" />
+    <ClCompile Include="ShinyBrick.cpp" />
     <ClCompile Include="Tail.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -153,6 +155,8 @@
     <ClInclude Include="map.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="QuestionBrick.h" />
+    <ClInclude Include="ShinyBrick.h" />
     <ClInclude Include="Tail.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />
