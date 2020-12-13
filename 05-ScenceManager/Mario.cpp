@@ -10,6 +10,9 @@
 #include "InviBrick.h"
 #include "Koopas.h"
 #include "platform.h"
+#include "QuestionBrick.h"
+#include "ShinyBrick.h"
+#include "Tunnel.h"
 CMario::CMario(float x, float y) : CGameObject()
 {
 	level = MARIO_LEVEL_FIRE;
@@ -59,7 +62,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	{
 		istaildropping = false;
 		isdropping = true;
-		vy += MARIO_GRAVITY * dt;
+		vy += MARIO_GRAVITY*dt;
 	}
 	if (stand_y - y > MARIO_MAX_JUMP_HEIGHT)
 	{
@@ -72,8 +75,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	if (vx == MARIO_MAX_SPEED || vx == -MARIO_MAX_SPEED)
 		maxspeed = true;
 	else maxspeed = false;
-	CheckForAniEnd();
+	if (is_tail_attacking & (animation_set->at(MARIO_ANI_TAIL_ATTACK_RIGHT)->IsRenderingLastFrame() || animation_set->at(MARIO_ANI_TAIL_ATTACK_LEFT)->IsRenderingLastFrame()))
+	{
+		AttackWithTail();
+		is_tail_attacking = false;
+	}
 	
+	CheckForAniEnd();
 	if (isCarrying)
 	{
 		koopas_carry->BeingCarry(this);
@@ -169,6 +177,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				}
 
 			}
+			if (dynamic_cast<Tunnel*>(e->obj))
+			{
+				Tunnel* tunnel = dynamic_cast<Tunnel*>(e->obj);
+				if (e->ny < 0)
+				{
+					onground = true;
+					allow_fly = false;
+					jumpflag = false;
+					isdropping = false;
+					istaildropping = false;
+				}
+			}
 			if (dynamic_cast<CBrick*>(e->obj))
 			{
 				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
@@ -184,6 +204,40 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				{
 					allow_jump = false;
 				}
+			}
+			if (dynamic_cast<QBrick*>(e->obj))
+			{
+				QBrick* Qbrick = dynamic_cast<QBrick*>(e->obj);
+				if (e->ny < 0)
+				{
+					onground = true;
+					allow_fly = false;
+					jumpflag = false;
+					isdropping = false;
+					istaildropping = false;
+				}
+				if (e->ny > 0)
+				{
+					allow_jump = false;
+					if (Qbrick->start_moving_up == false  && Qbrick->disabled == false)
+					{
+						Qbrick->start_moving_up = true;
+						Qbrick->base_y = Qbrick->y;
+					}
+				}
+			}
+			if (dynamic_cast<SBrick*>(e->obj))
+			{
+				SBrick* Sbrick = dynamic_cast<SBrick*>(e->obj);
+				if (e->ny < 0)
+				{
+					onground = true;
+					allow_fly = false;
+					jumpflag = false;
+					isdropping = false;
+					istaildropping = false;
+				}
+				
 			}
 			if (dynamic_cast<platform*>(e->obj))
 			{
@@ -278,28 +332,56 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				if (e->ny < 0 && koopas->GetState()==KOOPAS_STATE_SPINNING)
 				{
 					koopas->vx = 0;
-					vy = -MARIO_JUMP_DEFLECT_SPEED;
+					vy = -MARIO_JUMP_DEFLECT_SPEED*1.3;
 					
 					koopas->SetState(KOOPAS_STATE_DIE);
 				}
 				else if (koopas->GetState() == KOOPAS_STATE_DIE)
 				{
-					if(nx>0)
-					koopas->nx = -1;
+					vy = -MARIO_JUMP_DEFLECT_SPEED * 2;
+					if (nx > 0)
+						koopas->nx = -1;
 					else koopas->nx = 1;
 					koopas->SetState(KOOPAS_STATE_SPINNING);
 				}
-				else if(koopas->GetState() == KOOPAS_STATE_WALKING)
+				if (e->nx != 0 && koopas->GetState() == KOOPAS_STATE_SPINNING)
 				{
 					if (untouchable == 0)
 					{
 						if (koopas->GetState() != KOOPAS_STATE_DIE)
 						{
-							if (level == MARIO_LEVEL_TAIL && state == MARIO_STATE_TAIL_ATTACK)
+							if (level == MARIO_LEVEL_TAIL)
 							{
-								koopas->GetHit();
+								level = MARIO_LEVEL_BIG;
+								StartUntouchable();
 							}
-							else if (level == MARIO_LEVEL_TAIL)
+							else if (level == MARIO_LEVEL_BIG)
+							{
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
+							}
+							else if (level == MARIO_LEVEL_FIRE)
+							{
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
+							}
+							else
+								SetState(MARIO_STATE_DIE);
+						}
+					}
+				}
+			
+				else if(koopas->GetState() == KOOPAS_STATE_WALKING)
+				{
+					if (untouchable == 0)
+					{
+						if (state == MARIO_STATE_TAIL_ATTACK)
+						{
+							koopas->GetHit();
+						}
+						if (koopas->GetState() != KOOPAS_STATE_DIE)
+						{
+							if (level == MARIO_LEVEL_TAIL)
 							{
 								level = MARIO_LEVEL_BIG;
 								StartUntouchable();
@@ -558,7 +640,7 @@ void CMario::SetState(int state)
 			ResetAni(MARIO_ANI_TAIL_ATTACK_RIGHT);
 			isWaitingForAni = true;
 		}
-		AttackWithTail();
+		is_tail_attacking = true;
 		break;
 	case MARIO_STATE_FIRE_ATTACK:
 	/*	if (nx < 0)
@@ -674,7 +756,9 @@ void CMario::Reset3()
 
 void CMario::AttackWithTail()
 {
+	tail->attacking = true;
 	tail->Attack(this);
+
 }
 void CMario::AttackWithFire(fire* Fire)
 {

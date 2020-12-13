@@ -1,11 +1,13 @@
 #pragma once
 #include "GameObject.h"
 #include "Utils.h"
-#define TAIL_BBOX_HEIGHT 8
-#define TAIL_BBOX_WIDTH 20
+#define TAIL_BBOX_HEIGHT 4
+#define TAIL_BBOX_WIDTH 42
 class CTail :public CGameObject
 {
+	
 public : 
+	bool attacking = false;
 	CTail();
 	~CTail();
 	void Attack(LPGAMEOBJECT user);

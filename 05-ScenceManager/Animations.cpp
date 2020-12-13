@@ -103,5 +103,5 @@ void CAnimationSets::Add(int id, LPANIMATION_SET ani_set)
 
 bool CAnimation::IsRenderingLastFrame()
 {
-	return currentFrame == frames.size() - 1;
+	return currentFrame == frames.size() - 3;
 }

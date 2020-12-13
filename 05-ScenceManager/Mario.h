@@ -138,6 +138,7 @@ class CMario : public CGameObject
 	float mario_y;
 	float last_vx = 0;
 	float stand_y = 0;
+	bool is_tail_attacking = false;
 public:bool isCarrying = false;
 public:bool isKicking = false;
 	bool  isKicking1 = false;

@@ -172,10 +172,9 @@ void CKoopas::BeingCarry(LPGAMEOBJECT user)
 void CKoopas::GetHit()
 {
 	flip = true;
-	state = KOOPAS_STATE_DIE;
 	if (state == KOOPAS_STATE_DIE)
 	{
-		vy =	- 5 *dt;
+		vy = -0.017f *dt;
 	}
 	else if (state != KOOPAS_STATE_DIE)
 	{

@@ -6,6 +6,7 @@
 #include "Textures.h"
 #include "Sprites.h"
 #include "Portal.h"
+#include "Tunnel.h"
 
 using namespace std;
 
@@ -39,6 +40,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_QBRICK 7
 #define OBJECT_TYPE_SBRICK 8
 #define OBJECT_TYPE_PORTAL	50
+#define OBJECT_TYPE_TUNNEL	9
 
 #define MAX_SCENE_LINE 1024
 #define ONGROUND_Y		433
@@ -186,6 +188,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_PLATFORM: obj = new platform(); break;
 	case OBJECT_TYPE_QBRICK: obj = new QBrick(); break;
 	case OBJECT_TYPE_SBRICK: obj = new SBrick(); break;
+	case OBJECT_TYPE_TUNNEL: obj = new Tunnel(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
