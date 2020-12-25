@@ -10,10 +10,11 @@
 class SBrick : public CGameObject
 {
 	void GetHit();
-	bool broke = false;
+	
 	bool explode = false;
 public: bool isWaitingForAni = false;
 public:
+	bool broke = false;
 	SBrick();
 	void SetState(int state);
 	virtual void Render();

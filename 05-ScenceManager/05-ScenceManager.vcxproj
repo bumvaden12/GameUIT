@@ -126,14 +126,17 @@
   <ItemGroup>
     <ClCompile Include="Animations.cpp" />
     <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="Effect.cpp" />
     <ClCompile Include="fire.cpp" />
     <ClCompile Include="InviBrick.cpp" />
+    <ClCompile Include="Items.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="platform.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="QuestionBrick.cpp" />
     <ClCompile Include="ShinyBrick.cpp" />
+    <ClCompile Include="ShootingPlant.cpp" />
     <ClCompile Include="Tail.cpp" />
     <ClCompile Include="Tunnel.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -146,18 +149,22 @@
     <ClCompile Include="Scence.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="Textures.cpp" />
+    <ClCompile Include="WingedGoomba.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animations.h" />
     <ClInclude Include="Brick.h" />
+    <ClInclude Include="Effect.h" />
     <ClInclude Include="fire.h" />
     <ClInclude Include="InviBrick.h" />
+    <ClInclude Include="Items.h" />
     <ClInclude Include="Koopas.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="QuestionBrick.h" />
     <ClInclude Include="ShinyBrick.h" />
+    <ClInclude Include="ShootingPlant.h" />
     <ClInclude Include="Tail.h" />
     <ClInclude Include="Tunnel.h" />
     <ClInclude Include="Utils.h" />
@@ -170,6 +177,7 @@
     <ClInclude Include="Scence.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="Textures.h" />
+    <ClInclude Include="WingedGoomba.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

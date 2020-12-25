@@ -14,7 +14,9 @@ public :bool start_moving_down = false;
 	float base_y;
 public:	bool disabled = false;
 public:
+	QBrick();
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	void GetHit();
 };

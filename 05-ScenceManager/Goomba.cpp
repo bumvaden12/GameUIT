@@ -1,6 +1,9 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include"Brick.h"
+#include "platform.h"
+#include "Tunnel.h"
+
 CGoomba::CGoomba()
 {
 	SetState(GOOMBA_STATE_WALKING);
@@ -77,11 +80,45 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			LPCOLLISIONEVENT e = coEventsResult[i];
 			if (dynamic_cast<CBrick*>(e->obj))
 			{
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 				if (e->nx != 0)
 				{
-					if (nx < 0)nx = 1;
-					else nx = -1;
+					if (nx < 0)
+					{
+						nx = 1;
+					}
+					else
+					{
+						nx = -1;
+					}
+				}
+
+			}
+			if (dynamic_cast<platform*>(e->obj))
+			{
+				if (e->nx != 0)
+				{
+					if (nx < 0)
+					{
+						nx = 1;
+					}
+					else
+					{
+						nx = -1;
+					}
+				}
+			}
+			if (dynamic_cast<Tunnel*>(e->obj))
+			{
+				if (e->nx != 0)
+				{
+					if (nx < 0)
+					{
+						nx = 1;
+					}
+					else
+					{
+						nx = -1;
+					}
 				}
 			}
 		}

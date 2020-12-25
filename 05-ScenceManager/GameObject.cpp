@@ -32,6 +32,18 @@ bool CGameObject::IsColidingAABB(CGameObject* obj)
 
 	return false;
 }
+void CGameObject::CalCollisions(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT>& coEventsResult)
+{
+	for (int i = 0; i < coObjects->size(); i++)
+	{
+		LPGAMEOBJECT obj = coObjects->at(i);
+			/*	DebugOut(L"obj %d \n", obj);*/
+			if (this->IsColidingAABB(obj))
+			{
+				coEventsResult.push_back(coObjects->at(i));
+			}
+	}
+}
 /*
 	Extension of original SweptAABB to deal with two moving objects
 */

@@ -7,6 +7,8 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Tunnel.h"
+#include "ShootingPlant.h"
+#include "WingedGoomba.h"
 
 using namespace std;
 
@@ -41,6 +43,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_SBRICK 8
 #define OBJECT_TYPE_PORTAL	50
 #define OBJECT_TYPE_TUNNEL	9
+#define OBJECT_TYPE_PLANT	10
+#define OBJECT_TYPE_WINGEDGOOMBA	11
 
 #define MAX_SCENE_LINE 1024
 #define ONGROUND_Y		433
@@ -160,7 +164,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	int object_type = atoi(tokens[0].c_str());
 	float x = atof(tokens[1].c_str());
 	float y = atof(tokens[2].c_str());
-
 	int ani_set_id = atoi(tokens[3].c_str());
 
 	CAnimationSets * animation_sets = CAnimationSets::GetInstance();
@@ -177,7 +180,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 		obj = new CMario(x,y); 
 		player = (CMario*)obj;  
-
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
@@ -189,6 +191,14 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_QBRICK: obj = new QBrick(); break;
 	case OBJECT_TYPE_SBRICK: obj = new SBrick(); break;
 	case OBJECT_TYPE_TUNNEL: obj = new Tunnel(); break;
+	case OBJECT_TYPE_PLANT:
+	{
+		fire_plant* fire = new fire_plant();
+		obj = new ShootingPlant(player,fire);
+		objects.push_back(fire);
+		break;
+	}
+	case OBJECT_TYPE_WINGEDGOOMBA: obj = new WingedGoomba(); break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
@@ -276,16 +286,28 @@ void CPlayScene::Update(DWORD dt)
 	//}
 	//if (fires.size() == FIRE_AMOUNT)player->isFireAttacking = false;
 	vector<LPGAMEOBJECT> coObjects;
+	vector<LPGAMEOBJECT> coObjects2;
 	for (size_t i = 1; i < objects.size(); i++)
 	{
 		coObjects.push_back(objects[i]);
+		
 	}
+	for (size_t i = 0; i < objects.size(); i++)
+	{
+		coObjects2.push_back(objects[i]);
 
+	}
+	
 	for (size_t i = 0; i < objects.size(); i++)
 	{
 		objects[i]->Update(dt, &coObjects);
-	}
 
+	}
+	for (size_t i = 0; i < Itemobjects.size(); i++)
+	{
+		Itemobjects[i]->Update(dt, &coObjects2);
+
+	}
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return; 
 

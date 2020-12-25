@@ -7,6 +7,9 @@
 #include "Brick.h"
 #include "Game.h"
 #include "platform.h"
+#include "ShootingPlant.h"
+#include "Tunnel.h"
+
 fire::fire(float x, float y):CGameObject()
 {
 	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
@@ -171,6 +174,21 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						y += dy;
 					}
+					if (dynamic_cast<Tunnel*>(e->obj))
+					{
+						if (e->nx != 0)
+						{
+							state = FIRE_STATE_WAITING;
+						}
+						if (e->ny < 0)
+						{
+
+						}
+						if (e->ny == 1)
+						{
+							y += dy;
+						}
+					}
 				}
 				///////
 				else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas
@@ -191,13 +209,14 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
+			for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 		}
 	}
 	else
 	{
 	vx = 0;
 	vy = 0;
- }
+	}
  CheckStateEnd();
 }
 void fire::SetPosition(float x, float y)
@@ -250,6 +269,226 @@ void fire::SetState(int state)
 	}
 }
 void fire::CheckStateEnd()
+{
+	if (isWaitingForAniFire)
+	{
+		if (animation_set->at(FIRE_ANI_EXPLODE)->IsOver())
+		{
+			isWaitingForAniFire = false;
+			SetState(FIRE_STATE_WAITING);
+		}
+	}
+}
+
+
+fire_plant::fire_plant(float x, float y) :CGameObject()
+{
+	CAnimationSets* animation_sets = CAnimationSets::GetInstance();
+	animation_set = animation_sets->Get(5);
+	this->x = x;
+	this->y = y;
+	SetState(FIRE_STATE_WAITING);
+}
+fire_plant::~fire_plant()
+{
+}
+void fire_plant::Attack(LPGAMEOBJECT user, int fire_pos)
+{
+	this->fire_pos = fire_pos;
+	float obj_x, obj_y;
+	user->GetPosition(obj_x, obj_y);
+	if (user->nx == 1)
+	{
+		SetPosition(obj_x + PLANT_BBOX_WIDTH, obj_y + 3);
+	}
+	else {
+		SetPosition(obj_x , obj_y + 3);
+	}
+	SetState(FIRE_STATE_BOUNCING);
+	nx = user->nx;
+	vx = 0;
+	vy = 0;
+
+}
+void fire_plant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+{
+	CGameObject::Update(dt, coObjects);
+	//
+	// TO-DO: make sure Goomba can interact with the world and to each of them too!
+	// 
+	if (allow_fire)
+	{	
+		
+		if (fire_pos == 1)
+		{
+			vx = -FIRE_PLANT_VX * dt;
+			vy = -FIRE_PLANT_VY_TOP * dt;
+		}
+		else 	if (fire_pos == 2)
+		{
+			vx = -FIRE_PLANT_VX * dt;
+			vy = -FIRE_PLANT_VY_BOTTOM * dt;
+		}
+		else if (fire_pos == 3)
+		{
+			vx = -FIRE_PLANT_VX * dt;
+			vy = FIRE_PLANT_VY_BOTTOM * dt;
+		}
+		else 	if (fire_pos == 4)
+		{
+			vx = -FIRE_PLANT_VX * dt;
+			vy = FIRE_PLANT_VY_TOP * dt;
+		}
+		else 	if (fire_pos == 5)
+		{
+			vx = FIRE_PLANT_VX * dt;
+			vy = -FIRE_PLANT_VY_TOP * dt;
+		}
+		else 	if (fire_pos == 6)
+		{
+			vx = FIRE_PLANT_VX * dt;
+			vy = -FIRE_PLANT_VY_BOTTOM * dt;
+		}
+		else 	if (fire_pos == 7)
+		{
+			vx = FIRE_PLANT_VX * dt;
+			vy = FIRE_PLANT_VY_BOTTOM * dt;
+		}
+		else 	if (fire_pos == 8)
+		{
+			vx = FIRE_PLANT_VX * dt;
+			vy = FIRE_PLANT_VY_TOP * dt;
+		}
+
+		if (this->x > CGame::GetInstance()->GetCamPosX() + CGame::GetInstance()->GetScreenWidth())
+		{
+			SetState(FIRE_STATE_WAITING);
+		}
+		else if (this->x < CGame::GetInstance()->GetCamPosX() - CGame::GetInstance()->GetScreenWidth() / 3)
+		{
+			SetState(FIRE_STATE_WAITING);
+		}
+		x += dx;
+		y += dy;
+		//vector<LPCOLLISIONEVENT> coEvents;
+		//vector<LPCOLLISIONEVENT> coEventsResult;
+		//coEvents.clear();
+		//CalcPotentialCollisions(coObjects, coEvents);
+
+		//if (coEvents.size() == 0)
+		//{
+		//	x += dx;
+		//	y += dy;
+		//}
+		//else
+		//{
+
+		//	float min_tx, min_ty, nx = 0, ny;
+		//	float rdx = 0;
+		//	float rdy = 0;
+
+		//	FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+		//	if (nx != 0) vx = 0;
+		//	if (ny != 0)
+		//	{
+		//		vy = 0;
+		//	}
+
+		//	//
+		//	// Collision logic with other objects
+		//	//
+		//	for (UINT i = 0; i < coEventsResult.size(); i++)
+		//	{
+		//		LPCOLLISIONEVENT e = coEventsResult[i];
+		//		if (dynamic_cast<CMario*>(e->obj))
+		//		{
+		//			CMario* mario = dynamic_cast<CMario*>(e->obj);
+		//			if (mario->untouchable == 0)
+		//			{
+		//				if (mario->level == MARIO_LEVEL_TAIL)
+		//				{
+		//					mario->level = MARIO_LEVEL_BIG;
+		//					mario->StartUntouchable();
+		//				}
+		//				else if (mario->level == MARIO_LEVEL_BIG)
+		//				{
+		//					mario->level = MARIO_LEVEL_SMALL;
+		//					mario->StartUntouchable();
+		//				}
+		//				else if (mario->level == MARIO_LEVEL_FIRE)
+		//				{
+		//					mario->level = MARIO_LEVEL_SMALL;
+		//					mario->StartUntouchable();
+		//				}
+		//				else
+		//					mario->SetState(MARIO_STATE_DIE);
+		//			}
+		//		}
+		//	}
+		//	x += dx;
+		//	y += dy;
+		//	
+		//}
+		//for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	}
+	else
+	{
+		vx = 0;
+		vy = 0;
+	}
+	CheckStateEnd();
+}
+void fire_plant::SetPosition(float x, float y)
+{
+	CGameObject::SetPosition(x, y);
+}
+void fire_plant::Render()
+{
+	if (state != FIRE_STATE_WAITING)
+	{
+		int ani = -1;
+		if (state == FIRE_STATE_EXPLODE)
+		{
+			ani = FIRE_ANI_EXPLODE;
+
+		}
+		else if (state == FIRE_STATE_BOUNCING && nx > 0)
+			ani = FIRE_ANI_RIGHT;
+		else if (state == FIRE_STATE_BOUNCING && nx < 0)
+			ani = FIRE_ANI_LEFT;
+		animation_set->at(ani)->Render(x, y);
+	}
+}
+
+void fire_plant::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	top = y;
+	left = x;
+	right = left + FIRE_BBOX_WIDTH;
+	bottom = top + FIRE_BBOX_HEIGHT;
+}
+void fire_plant::SetState(int state)
+{
+	CGameObject::SetState(state);
+
+	switch (state)
+	{
+	case FIRE_STATE_WAITING:
+		allow_fire = FALSE;
+		isFiring = false;
+		break;
+	case FIRE_STATE_EXPLODE:
+		ResetAni(FIRE_ANI_EXPLODE);
+		isWaitingForAniFire = true;
+		break;
+	case FIRE_STATE_BOUNCING:
+		allow_fire = TRUE;
+		isFiring = true;
+
+	}
+}
+void fire_plant::CheckStateEnd()
 {
 	if (isWaitingForAniFire)
 	{

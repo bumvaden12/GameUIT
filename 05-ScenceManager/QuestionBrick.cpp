@@ -1,6 +1,9 @@
 #include "QuestionBrick.h"
 #include "Utils.h"
-
+QBrick::QBrick()
+{
+	isKillable = true;
+}
 void QBrick::Render()
 {
 	/*RenderBoundingBox();*/
@@ -44,4 +47,8 @@ void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 	y += dy;
 
+}
+void QBrick::GetHit()
+{
+	disabled = true;
 }

@@ -13,6 +13,8 @@
 #include "QuestionBrick.h"
 #include "ShinyBrick.h"
 #include "Tunnel.h"
+#include "WingedGoomba.h"
+
 CMario::CMario(float x, float y) : CGameObject()
 {
 	level = MARIO_LEVEL_FIRE;
@@ -255,6 +257,56 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					allow_jump = false;
 				}
 			}
+			if (dynamic_cast<WingedGoomba*>(e->obj)) // if e->obj is Goomba 
+			{
+
+				WingedGoomba* goomba = dynamic_cast<WingedGoomba*>(e->obj);
+				// jump on top >> kill Goomba and deflect a bit 
+				if (e->ny < 0)
+				{
+					if (goomba->level == WINGEDGOOMBA_LEVEL_WING)
+					{
+						goomba->level = WINGEDGOOMBA_LEVEL_NOWING;
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+					else if (goomba->GetState() != GOOMBA_STATE_DIE)
+					{
+						goomba->SetState(GOOMBA_STATE_DIE);
+						vy = -MARIO_JUMP_DEFLECT_SPEED;
+					}
+				}
+				else
+				{
+					
+					if (untouchable == 0)
+					{
+						if (goomba->GetState() != GOOMBA_STATE_DIE)
+						{
+							/*if (level == MARIO_LEVEL_TAIL && state == MARIO_STATE_TAIL_ATTACK)
+							{
+								goomba->SetState(GOOMBA_STATE_DIE);
+							}*/
+							if (level == MARIO_LEVEL_TAIL)
+							{
+								level = MARIO_LEVEL_BIG;
+								StartUntouchable();
+							}
+							else if (level == MARIO_LEVEL_BIG)
+							{
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
+							}
+							else if (level == MARIO_LEVEL_FIRE)
+							{
+								level = MARIO_LEVEL_BIG;
+								StartUntouchable();
+							}
+							else
+								SetState(MARIO_STATE_DIE);
+						}
+					}
+				}
+			}
 			if (dynamic_cast<CGoomba *>(e->obj)) // if e->obj is Goomba 
 			{
 				
@@ -299,11 +351,59 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					}
 				}
 			} 
+			/*if (dynamic_cast<ShootingPlant*>(e->obj))
+			{
+				ShootingPlant* plant = dynamic_cast<ShootingPlant*>(e->obj);
+				if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_TAIL)
+					{
+						level = MARIO_LEVEL_BIG;
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						level = MARIO_LEVEL_SMALL;
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_FIRE)
+					{
+						level = MARIO_LEVEL_SMALL;
+						StartUntouchable();
+					}
+					else
+						SetState(MARIO_STATE_DIE);
+				}
+			}*/
+ 			if (dynamic_cast<fire_plant*>(e->obj))
+			{
+				fire_plant* fire = dynamic_cast<fire_plant*>(e->obj);
+				if (untouchable == 0)
+				{
+					if (level == MARIO_LEVEL_TAIL)
+					{
+						level = MARIO_LEVEL_BIG;
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_BIG)
+					{
+						level = MARIO_LEVEL_SMALL;
+						StartUntouchable();
+					}
+					else if (level == MARIO_LEVEL_FIRE)
+					{
+						level = MARIO_LEVEL_SMALL;
+						StartUntouchable();
+					}
+					else
+						SetState(MARIO_STATE_DIE);
+				}
+			}
 			if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Goomba 
 			{
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0 && koopas->GetState()== KOOPAS_STATE_WALKING)
+				if (e->ny < 0 && koopas->GetState() == KOOPAS_STATE_WALKING)
 				{
 					if (koopas->GetState() != KOOPAS_STATE_DIE)
 					{
@@ -311,8 +411,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						vy = -MARIO_JUMP_DEFLECT_SPEED;
 					}
 				}
-				
-				if (e->nx != 0 && CGame::GetInstance()->IsKeyDown(DIK_D)&& koopas->GetState()== KOOPAS_STATE_DIE)
+				else if (e->nx != 0 && CGame::GetInstance()->IsKeyDown(DIK_D)&& koopas->GetState()== KOOPAS_STATE_DIE)
 				{
 					isCarrying = true;
 					koopas_carry = koopas;
@@ -329,7 +428,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						isWaitingForAni = true;
 					}
 				}
-				if (e->ny < 0 && koopas->GetState()==KOOPAS_STATE_SPINNING)
+				else if (e->ny < 0 && koopas->GetState()==KOOPAS_STATE_SPINNING)
 				{
 					koopas->vx = 0;
 					vy = -MARIO_JUMP_DEFLECT_SPEED*1.3;
@@ -344,7 +443,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					else koopas->nx = 1;
 					koopas->SetState(KOOPAS_STATE_SPINNING);
 				}
-				if (e->nx != 0 && koopas->GetState() == KOOPAS_STATE_SPINNING)
+				else if (e->nx != 0 && koopas->GetState() == KOOPAS_STATE_SPINNING)
 				{
 					if (untouchable == 0)
 					{
@@ -414,7 +513,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
-
 void CMario::Render()
 {
 	int ani = -1;

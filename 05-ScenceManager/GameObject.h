@@ -63,6 +63,7 @@ public:
 	LPANIMATION_SET animation_set;
 
 public: 
+	void CalCollisions(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOBJECT>& coEventsResult);
 	bool IsColidingAABB(CGameObject* obj);
 	void SetPosition(float x, float y) { this->x = x; this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx; this->vy = vy; }

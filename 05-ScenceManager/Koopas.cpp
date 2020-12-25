@@ -2,6 +2,7 @@
 #include "Brick.h"
 #include "Mario.h"
 #include "platform.h"
+#include "Tunnel.h"
 
 CKoopas::CKoopas()
 {
@@ -110,6 +111,20 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 					{
 						nx = -1;
 					/*	vx = -KOOPAS_SPINNING_SPEED * dt;*/
+					}
+				}
+			}
+			if (dynamic_cast<Tunnel*>(e->obj))
+			{
+				if (e->nx != 0)
+				{
+					if (nx < 0)
+					{
+						nx = 1;
+					}
+					else
+					{
+						nx = -1;
 					}
 				}
 			}

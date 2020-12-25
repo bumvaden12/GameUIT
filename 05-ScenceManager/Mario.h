@@ -3,6 +3,7 @@
 #include "Tail.h"
 #include "fire.h"
 #include "Koopas.h"
+
 #define MARIO_WALKING_SPEED		0.08f 
 #define MARIO_MAX_SPEED			0.15f
 //0.1f
@@ -178,5 +179,6 @@ public:
 	void AttackWithTail();
 	void AttackWithFire(fire* Fire);
 	void CheckForAniEnd();
+	int GetLevel() { return level; };
 	virtual void GetBoundingBox(float &left, float &top, float &right, float &bottom);
 };

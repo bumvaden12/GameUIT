@@ -20,6 +20,7 @@ protected:
 	TileMap* tileMap;
 	/*vector<fire*> fires;*/
 	vector<LPGAMEOBJECT> objects;
+	vector<LPGAMEOBJECT> Itemobjects;
 	int mapWidth, mapHeight;
 
 	void _ParseSection_TEXTURES(string line);

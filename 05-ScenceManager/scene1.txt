@@ -5,6 +5,7 @@
 10	textures\enemies.png	3	26	110
 30	textures\enemies-2.png	0	128	128
 40	textures\mario-2.png	255	255	255
+50	textures\os\enemiesvip.png	255	255	255
 [TILE_MAP_DATA]
 1	tilemap\tile_map.png	tilemap\tile_map.txt	10	11	42	177	16	16
 # id	left	top	right	bottom	texture_id
@@ -257,6 +258,38 @@
 50038	333	283	349	299	30
 50039	350	283	366	299	30
 
+# PLANT
+# trai tren
+60001	165	545	181	578	50
+# trai tren - fire
+60002	65	545	81	578	50
+# trai duoi
+60003	115	545	131	578	50
+# trai duoi - fire
+60004	15	545	31	578	50
+# phai tren
+60005	215	545	231	578	50
+# phai tren - fire
+60006	315	545	331	578	50
+# phai duoi
+60007	265	545	281	578	50
+# phai duoi - fire
+60008	365	545	381	578	50
+
+#---WINGED GOOMBA---
+#onground-WING
+70001	213	52	233	71	50
+70002	263	52	283	71	50
+#fly
+70003	113	50	133	74	50
+70004	163	50	183	74	50
+#onground
+70005	15	54	31	70	50
+70006	65	54	81	70	50
+#die
+70007	315	57	331	66	50
+
+
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
 
@@ -431,7 +464,35 @@
 #spinning up
 806	50037	100	50038	100	50039	100	50036	100
 
-#
+# ====plant======
+# trai tren
+901	60001	100
+#trai tren- fire
+902	60002	100
+# trai duoi
+903	60003	100
+#trai duoi - fire
+904	60004	100
+#phai tren
+905	60005	100
+#phai tren - fire
+906	60006	100
+#phai duoi
+907	60007	100
+#phai duoi - fire
+908	60008	100
+
+#---WINGED GOOMBA---
+#onground-wing
+1001	70001	100	70002	100
+#fly
+1002	70003	100	70004	100
+#onground
+1003	70005	100	70006	100
+#die
+1004	70007	100
+
+
 # id	ani1	ani2	ani3
 #
 [ANIMATION_SETS]
@@ -447,19 +508,25 @@
 24	604
 # GOOMBA
 3	701	702
+#WINGED GOOMBA 
+31	1001	1002	1003	1004
 #KOOPAS
 4	801	802	803	804	805	806
 #fire
 5	543	544	545
+#plant
+6	901	902	903	904	905	906	907	908
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Mario , 1 = Brick, 2 = Goomba, 4 = InviBrick, 9 = tunnel
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 4 = InviBrick, 9 = tunnel, 10 = PLANT,11= winged goomba
 # MARIO
 0	50.0	300	1
 5	50.0	300	5
-
+# PLANT
+10	360	335	6
 # GOOMBA
-2	200	350	3
+#2	200	350	3
+11	200	340	31
 #2	260	400	3
 #2	320	400	3
 #2	480	400	3
