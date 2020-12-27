@@ -9,6 +9,7 @@
 #define ITEM_MONEY_IDLE			3
 #define ITEM_MONEY_ROTATOR		4
 #define ITEM_MUSHROOM_GREEN		5
+#define ITEM_MUSHROOM_RED		6
 
 #define ITEM_BBOX_L				4
 #define ITEM_BBOX_T				4

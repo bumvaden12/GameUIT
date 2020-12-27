@@ -13,6 +13,9 @@
 #include "Scence.h"
 
 using namespace std;
+#define SCENCE_START			0
+#define SCENCE_WORD_MAP_1		1
+#define SCENCE_WORD_MAP_1_1		4
 
 #define KEYBOARD_BUFFER_SIZE 1024
 #define TILE_WIDTH 16
@@ -45,7 +48,10 @@ class CGame
 	unordered_map<int, LPSCENE> scenes;
 	int current_scene; 
 
-
+	int Score = 0;
+	int Money = 0;
+	int Life = 4;
+	int Time = 900;
 
 	void _ParseSection_SETTINGS(string line);
 	void _ParseSection_SCENES(string line);
@@ -58,7 +64,15 @@ public:
 
 	int IsKeyDown(int KeyCode);
 	void ProcessKeyboard();
-
+	int GetScore() { return Score; };
+	void SetScore(int Score) { this->Score = Score; }
+	int GetLife() { return Life; };
+	void SetLife(int Life) { this->Life = Life; }
+	int GetTime() { return Time; };
+	void SetTime(int Life) { this->Time = Time; }
+	int GetMoney() { return Money; }
+	void SetMoney(int money) { this->Money = money; }
+	int Getcurrent_scene() { return current_scene; }
 	void Load(LPCWSTR gameFile);
 	LPSCENE GetCurrentScene() { return scenes[current_scene]; }
 	void SwitchScene(int scene_id);

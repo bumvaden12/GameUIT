@@ -8,6 +8,8 @@
 #include"Game.h"
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 240
+
+
 class TileMap
 {
 	CSprites* sprites = CSprites::GetInstance();
@@ -18,7 +20,6 @@ class TileMap
 	int num_row_on_tilemap, num_col_on_tilemap;
 	int num_row_on_texture, num_col_on_textture;
 	int tileset_width, tileset_height;
-
 	//vector<vector<LPSPRITE>> tilemap;
 	int tilemap[300][300];
 
@@ -29,4 +30,6 @@ public:
 	void Load();
 	void LoadMap();
 	void Draw();
+	float GetHeightMap();
+	float GetWidthMap();
 };

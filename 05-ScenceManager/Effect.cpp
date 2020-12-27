@@ -1,5 +1,10 @@
 #include "Effect.h"
-
+Effect::Effect(float PosX, float PosY, int Ani)
+{
+	this->PosX = PosX;
+	this->PosY = PosY;
+	this->AniEffect = Ani;
+}
 void Effect::Update(DWORD dt)
 {
 	Vy -= SPEED_VY * dt;
@@ -14,9 +19,3 @@ void Effect::Render()
 		CSprites::GetInstance()->Get(AniEffect)->Draw(PosX, PosY);
 }
 
-Effect::Effect(float PosX, float PosY, int Ani)
-{
-	this->PosX = PosX;
-	this->PosY = PosY;
-	this->AniEffect = Ani;
-}

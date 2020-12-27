@@ -4,6 +4,8 @@
 #include "ShinyBrick.h"
 #include "platform.h"
 #include "Effect.h"
+#include "Game.h"
+
 void Items::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	if (IdItem == ITEM_SWITCH)
@@ -77,12 +79,12 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 		else if (IdItem == ITEM_MONEY) {
 			vy += ITEM_GRAVITY * dt;
-			if (y - Y_Start > 0 && vy != 0)
+			if (y > Y_Start  && vy != 0)
 			{
-			/*	int CurentScore = CGame::GetInstance()->GetScore();
+				int CurentScore = CGame::GetInstance()->GetScore();
 				CGame::GetInstance()->SetScore(CurentScore + 100);
 				int CurentMoney = CGame::GetInstance()->GetMoney();
-				CGame::GetInstance()->SetMoney(CurentMoney + 1);*/
+				CGame::GetInstance()->SetMoney(CurentMoney + 1);
 				AniEffect = SpriteEffectStart + EFFECT_100;
 				effect = new Effect(this->x, this->y - BRICK_BBOX_HEIGHT, AniEffect);
 				x = -100; y = -100.0f; vy = 0; vx = 0;
@@ -163,10 +165,10 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						AniEffect = SpriteEffectStart + EFFECT_1000;
 						effect = new Effect(this->x, this->y - BRICK_BBOX_HEIGHT, AniEffect);
-						/*int CurentScore = CGame::GetInstance()->GetScore();
+						int CurentScore = CGame::GetInstance()->GetScore();
 						CGame::GetInstance()->SetScore(CurentScore + 1000);
 						int CurentMoney = CGame::GetInstance()->GetMoney();
-						CGame::GetInstance()->SetMoney(CurentMoney + 1);*/
+						CGame::GetInstance()->SetMoney(CurentMoney + 1);
 						x = -100; y = -100; vy = 0; vx = 0;
 						Active = false;
 					}
@@ -183,10 +185,10 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					
 					if (Active)
 					{
-					/*	int CurentScore = CGame::GetInstance()->GetScore();
+						int CurentScore = CGame::GetInstance()->GetScore();
 						CGame::GetInstance()->SetScore(CurentScore + 100);
 						int CurentMoney = CGame::GetInstance()->GetMoney();
-						CGame::GetInstance()->SetMoney(CurentMoney + 1);*/
+						CGame::GetInstance()->SetMoney(CurentMoney + 1);
 						x = -100; y = -100; vy = 0; vx = 0;
 						Active = false;
 					}
@@ -194,17 +196,17 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 				else if (IdItem == ITEM_MONEY_ROTATOR) {
 					Active = false;
-					/*int CurentScore = CGame::GetInstance()->GetScore();
+					int CurentScore = CGame::GetInstance()->GetScore();
 					CGame::GetInstance()->SetScore(CurentScore + 100);
 					int CurentMoney = CGame::GetInstance()->GetMoney();
-					CGame::GetInstance()->SetMoney(CurentMoney + 1);*/
+					CGame::GetInstance()->SetMoney(CurentMoney + 1);
 					x = -100; y = -100.0f; vy = 0; vx = 0;
 				}
 				else if (IdItem == ITEM_MUSHROOM_GREEN && vx != 0) {
 					AniEffect = SpriteEffectStart + EFFECT_1_UP;
 					effect = new Effect(this->x, this->y, AniEffect);
-				/*	int CurentLife = CGame::GetInstance()->GetLife();
-					CGame::GetInstance()->SetLife(CurentLife + 1);*/
+					int CurentLife = CGame::GetInstance()->GetLife();
+					CGame::GetInstance()->SetLife(CurentLife + 1);
 					this->Active = false;
 					x = -100; y = -100.0f; vy = 0; vx = 0;
 				}
@@ -212,13 +214,13 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<QBrick*>(e))
 			{
 				QBrick* QuestionBrick = dynamic_cast<QBrick*>(e);
-				if (QuestionBrick->disabled)
+				if (QuestionBrick->disabled && Active == false)
 				{
 					if (IdItem == ITEM_TREE_LEAF || IdItem == ITEM_MONEY)
 						vy = -ITEM_DEFLECT_SPEED * dt;
 					Active = true;
 				}
-				if (QuestionBrick->disabled)
+				if (QuestionBrick->disabled )
 				{
 					if (IdItem == ITEM_SWITCH)
 						vy = -ITEM_SWITCH_VY * dt;
@@ -229,7 +231,6 @@ void Items::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					Active = true;
 				}
 			}
-
 			else if (dynamic_cast<SBrick*>(e)) {
 				Active = false;
 				OfBrick = true;
@@ -263,7 +264,6 @@ void Items::Render()
 		animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();
 }
-
 Items::Items(int IdItem, int SpriteEffectStart)
 {
 	this->IdItem = IdItem;
@@ -271,7 +271,6 @@ Items::Items(int IdItem, int SpriteEffectStart)
 		Active = true;
 	this->SpriteEffectStart = SpriteEffectStart;
 }
-
 void Items::SetState(int state)
 {
 	switch (state)

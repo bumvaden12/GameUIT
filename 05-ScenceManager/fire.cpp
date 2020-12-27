@@ -9,6 +9,8 @@
 #include "platform.h"
 #include "ShootingPlant.h"
 #include "Tunnel.h"
+#include "QuestionBrick.h"
+#include "WingedGoomba.h"
 
 fire::fire(float x, float y):CGameObject()
 {
@@ -55,7 +57,7 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		if (nx == 1)
 			vx = FIRE_FOWARD_SPEED;
 		else vx = -FIRE_FOWARD_SPEED;
-		if (allow_bouncing == true )
+		if (allow_bouncing == true)
 		{
 			vy = -FIRE_JUMP_SPEED;
 			fire_onground = false;
@@ -113,22 +115,7 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
-				if (dynamic_cast<InviBrick*>(e->obj))
-				{
-					if (e->nx != 0)
-					{
-						x += dx;
-					}
-					if (e->ny < 0)
-					{
-
-					}
-					if (e->ny == 1)
-					{
-						y += dy;
-					}
-
-				}
+				
 				if (dynamic_cast<CBrick*>(e->obj))
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
@@ -144,7 +131,37 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						allow_fire = false;
 					}
 				}
-				if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
+				else if (dynamic_cast<QBrick*>(e->obj))
+				{
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+					if (e->ny < 0)
+					{
+					}
+					if (e->ny > 0)
+					{
+					}
+					if (e->nx != 0)
+					{
+						state = FIRE_STATE_WAITING;
+						allow_fire = false;
+					}
+				}
+				else if (dynamic_cast<ShootingPlant*>(e->obj))
+				{
+					ShootingPlant* brick = dynamic_cast<ShootingPlant*>(e->obj);
+					if (e->ny < 0)
+					{
+					}
+					if (e->ny > 0)
+					{
+					}
+					if (e->nx != 0)
+					{
+						state = FIRE_STATE_WAITING;
+						allow_fire = false;
+					}
+				}
+				else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 				{
 					CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
@@ -160,11 +177,12 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						y += dy;
 					}
 				}
-				if (dynamic_cast<platform*>(e->obj))
+				else if (dynamic_cast<platform*>(e->obj))
 				{
 					if (e->nx != 0)
 					{
 						state = FIRE_STATE_WAITING;
+						allow_fire = false;
 					}
 					if (e->ny < 0)
 					{
@@ -174,20 +192,22 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						y += dy;
 					}
-					if (dynamic_cast<Tunnel*>(e->obj))
-					{
-						if (e->nx != 0)
-						{
-							state = FIRE_STATE_WAITING;
-						}
-						if (e->ny < 0)
-						{
 
-						}
-						if (e->ny == 1)
-						{
-							y += dy;
-						}
+				}
+				else 	if (dynamic_cast<Tunnel*>(e->obj))
+				{
+					if (e->nx != 0)
+					{
+						state = FIRE_STATE_WAITING;
+						allow_fire = false;
+					}
+					if (e->ny < 0)
+					{
+
+					}
+					if (e->ny == 1)
+					{
+						y += dy;
 					}
 				}
 				///////
@@ -199,8 +219,8 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (koopas->GetState() != KOOPAS_STATE_DIE)
 					{
 						koopas->SetState(KOOPAS_STATE_DIE);
-						allow_fire = false;
 						SetState(FIRE_STATE_EXPLODE);
+						allow_fire = false;
 					}
 					else
 					{
@@ -208,8 +228,43 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						y += dy;
 					}
 				}
+				else if (dynamic_cast<WingedGoomba*>(e->obj)) // if e->obj is Goomba 
+				{
+
+					WingedGoomba* goomba = dynamic_cast<WingedGoomba*>(e->obj);
+					// jump on top >> kill Goomba and deflect a bit 
+					
+						if (goomba->level == WINGEDGOOMBA_LEVEL_WING)
+						{
+							goomba->level = WINGEDGOOMBA_LEVEL_NOWING;
+							vy = -MARIO_JUMP_DEFLECT_SPEED;
+						}
+						else if (goomba->GetState() != GOOMBA_STATE_DIE)
+						{
+							goomba->SetState(GOOMBA_STATE_DIE);
+							vy = -MARIO_JUMP_DEFLECT_SPEED;
+						}
+						SetState(FIRE_STATE_EXPLODE);
+						allow_fire = false;
+					
+				}
+				else if (dynamic_cast<InviBrick*>(e->obj))
+				{
+					InviBrick* brick = dynamic_cast<InviBrick*>(e->obj);
+					if (e->ny < 0)
+					{
+					}
+					if (e->ny > 0)
+					{
+					}
+					if (e->nx != 0)
+					{
+						state = FIRE_STATE_WAITING;
+						allow_fire = false;
+					}
+				}
+				for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 			}
-			for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 		}
 	}
 	else

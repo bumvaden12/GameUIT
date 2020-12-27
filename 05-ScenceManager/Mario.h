@@ -10,14 +10,14 @@
 #define MARIO_TAILDROP_DISTANCE	15
 #define MARIO_FLY_DISTANCE		15
 #define MARIO_JUMP_ACCE			0.018f
-#define MARIO_FLY_ACCE			0.01f
+#define MARIO_FLY_ACCE			0.015f
 #define MARIO_MIN_JUMP_HEIGHT 0.4f
 #define MARIO_MAX_JUMP_HEIGHT 50.0f
 #define MARIO_JUMP_DEFLECT_SPEED 0.2f
 #define MARIO_GRAVITY			0.0018f
 #define MARIO_TAILDROP_SPEED	0.002f
 #define MARIO_DIE_DEFLECT_SPEED	0.5f
-#define MARIO_ACCE				0.01f
+#define MARIO_ACCE				0.005f
 #define MARIO_STOP_ACCE			0.006f
 #define MARIO_ANTI_MOVE			0.002f
 #define MARIO_STATE_IDLE			0
@@ -103,6 +103,7 @@
 #define MARIO_ANI_FIRE_KICK_LEFT			59
 #define MARIO_ANI_FIRE_KICK_RIGHT			60
 
+#define MARIO_LEVEL_MINI	0
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
 #define MARIO_LEVEL_TAIL	3
@@ -129,6 +130,15 @@
 #define MARIO_UNTOUCHABLE_TIME	5000
 #define MARIO_ATTACKING_TIME	1000
 
+//start scence
+#define MARIO_MINI_SPEED				0.1f
+#define MARIO_MINI_STATE_UP				1300
+#define MARIO_MINI_STATE_DOWN			1400
+#define MARIO_MINI_STATE_LEFT			1500
+#define MARIO_MINI_STATE_RIGHT			1600
+#define MARIO_MINI_STATE_TELEPORT		1700
+
+#define MARIO_MINI_ANI					0
 
 class CMario : public CGameObject
 {
@@ -160,6 +170,7 @@ public:bool onground = false;
 	int untouchable;
 	int attackflag;
 	bool isFireAttacking = false;
+	bool StartTeleport;
 	DWORD untouchable_start;
 
 	float start_x;			// initial position of Mario at scene

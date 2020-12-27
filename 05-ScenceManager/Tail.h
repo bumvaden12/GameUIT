@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "Utils.h"
-#define TAIL_BBOX_HEIGHT 4
-#define TAIL_BBOX_WIDTH 42
+#define TAIL_BBOX_HEIGHT 3
+#define TAIL_BBOX_WIDTH 36
 class CTail :public CGameObject
 {
 	

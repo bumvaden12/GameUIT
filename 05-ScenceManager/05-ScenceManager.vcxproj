@@ -137,7 +137,9 @@
     <ClCompile Include="QuestionBrick.cpp" />
     <ClCompile Include="ShinyBrick.cpp" />
     <ClCompile Include="ShootingPlant.cpp" />
+    <ClCompile Include="StatusBar.cpp" />
     <ClCompile Include="Tail.cpp" />
+    <ClCompile Include="Tree.cpp" />
     <ClCompile Include="Tunnel.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -165,7 +167,9 @@
     <ClInclude Include="QuestionBrick.h" />
     <ClInclude Include="ShinyBrick.h" />
     <ClInclude Include="ShootingPlant.h" />
+    <ClInclude Include="StatusBar.h" />
     <ClInclude Include="Tail.h" />
+    <ClInclude Include="Tree.h" />
     <ClInclude Include="Tunnel.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Game.h" />

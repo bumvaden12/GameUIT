@@ -22,3 +22,12 @@ public:
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
 };
+
+class Ground : public CGameObject
+{
+	float Width;
+public:
+	Ground(float Width);
+	virtual void Render();
+	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
+};

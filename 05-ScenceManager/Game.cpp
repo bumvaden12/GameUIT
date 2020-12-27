@@ -342,8 +342,12 @@ void CGame::_ParseSection_SCENES(string line)
 	if (tokens.size() < 2) return;
 	int id = atoi(tokens[0].c_str());
 	LPCWSTR path = ToLPCWSTR(tokens[1]);
-
+	/*int IDScene = atoi(tokens[2].c_str());*/
 	LPSCENE scene = new CPlayScene(id, path);
+	/*if (IDScene == 1)
+		scene = new SenceWorldMap(id, path);
+	else
+		scene = new CPlayScene(id, path);*/
 	scenes[id] = scene;
 }
 

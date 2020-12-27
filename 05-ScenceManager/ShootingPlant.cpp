@@ -140,7 +140,7 @@ void ShootingPlant::Render()
 	}
 
 	fire->Render();
-	animation_set->at(ani)->Render(x, y);
+ 	animation_set->at(ani)->Render(x, y);
 
 	//RenderBoundi	ngBox();
 }

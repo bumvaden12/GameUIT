@@ -9,7 +9,8 @@
 #include "Tunnel.h"
 #include "ShootingPlant.h"
 #include "WingedGoomba.h"
-
+#include "Items.h"
+#include "Tree.h"
 using namespace std;
 
 CPlayScene::CPlayScene(int id, LPCWSTR filePath):
@@ -31,6 +32,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define SCENE_SECTION_ANIMATION_SETS	5
 #define SCENE_SECTION_OBJECTS	6
 #define SCENE_SECTION_TILEMAP_DATA	7
+#define SCENE_SECTION_EFFECT	8
+#define SCENE_SECTION_STATUS_BAR	9
 
 #define OBJECT_TYPE_MARIO	0
 #define OBJECT_TYPE_BRICK	1
@@ -45,6 +48,9 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath):
 #define OBJECT_TYPE_TUNNEL	9
 #define OBJECT_TYPE_PLANT	10
 #define OBJECT_TYPE_WINGEDGOOMBA	11
+#define OBJECT_TYPE_ITEM	12
+#define OBJECT_TYPE_GROUND	13
+#define OBJECT_TYPE_TREE	14
 
 #define MAX_SCENE_LINE 1024
 #define ONGROUND_Y		433
@@ -153,6 +159,21 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 /*
 	Parse a line in section [OBJECTS] 
 */
+void CPlayScene::_ParseSection_EFFECT(string line) {
+	vector<string> tokens = split(line);
+	if (tokens.size() < 1) return;
+	SpriteEffectStart = atoi(tokens[0].c_str());
+}
+void CPlayScene::_ParseSection_STATUS_BAR(string line) {
+	vector<string> tokens = split(line);
+	if (tokens.size() < 4) return; // skip invalid lines
+
+	int SpriteStatusBar = atoi(tokens[0].c_str());	// 80000	80001	80010	80020
+	int SpriteCardBar = atoi(tokens[1].c_str());
+	int SpriteNumber0 = atoi(tokens[2].c_str());
+	int SpritePowerState = atoi(tokens[3].c_str());
+	statusBar = new StatusBar(player, SpriteStatusBar, SpriteCardBar, SpriteNumber0, SpritePowerState);
+}
 void CPlayScene::_ParseSection_OBJECTS(string line)
 {
 	vector<string> tokens = split(line);
@@ -169,6 +190,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	CAnimationSets * animation_sets = CAnimationSets::GetInstance();
 
 	CGameObject *obj = NULL;
+	CGameObject* objItem = NULL;
 
 	switch (object_type)
 	{
@@ -180,25 +202,54 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 		obj = new CMario(x,y); 
 		player = (CMario*)obj;  
+		if (CGame::GetInstance()->Getcurrent_scene() == 3)
+			player->SetLevel(MARIO_LEVEL_MINI);
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
-	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
+	case OBJECT_TYPE_KOOPAS:
+	{
+		int TypeKoopas = atoi(tokens[4].c_str());
+		obj = new CKoopas(TypeKoopas);
+	}break;
 	case OBJECT_TYPE_INVIBRICK: obj = new InviBrick(); break;
 	case OBJECT_TYPE_FIRE:	obj = new fire(); break;
 	case OBJECT_TYPE_PLATFORM: obj = new platform(); break;
 	case OBJECT_TYPE_QBRICK: obj = new QBrick(); break;
-	case OBJECT_TYPE_SBRICK: obj = new SBrick(); break;
-	case OBJECT_TYPE_TUNNEL: obj = new Tunnel(); break;
+	case OBJECT_TYPE_SBRICK: obj = new SBrick(ItemSwitch); break;
+	case OBJECT_TYPE_GROUND:
+	{
+		float Width = atoi(tokens[4].c_str());
+		obj = new Ground(Width);
+	}break;
+	case OBJECT_TYPE_TUNNEL: 
+	{
+		float Height = atoi(tokens[4].c_str());
+		int IDAni = atoi(tokens[5].c_str());
+		obj = new Tunnel(Height, IDAni);
+	} break;
 	case OBJECT_TYPE_PLANT:
 	{
 		fire_plant* fire = new fire_plant();
 		obj = new ShootingPlant(player,fire);
 		objects.push_back(fire);
-		break;
-	}
+	}break;
 	case OBJECT_TYPE_WINGEDGOOMBA: obj = new WingedGoomba(); break;
+	case OBJECT_TYPE_TREE:
+	{
+		int IdObj = atoi(tokens[4].c_str());
+		obj = new Tree(IdObj);
+	} break;
+	case OBJECT_TYPE_ITEM:
+	{
+		int IdItem = atoi(tokens[4].c_str());
+			if (IdItem != ITEM_SWITCH)
+			objItem = new Items(IdItem, SpriteEffectStart);
+		else {
+			obj = new Items(IdItem, SpriteEffectStart);
+		}
+	}break;
 	case OBJECT_TYPE_PORTAL:
 		{	
 			float r = atof(tokens[4].c_str());
@@ -213,12 +264,25 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	}
 
 	// General object setup
-	obj->SetPosition(x, y);
+	if (obj != NULL)
+	{
+		// General object setup
+		obj->SetPosition(x, y);
+		//obj->SetXYStartLive(x, y);
+		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
-	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
+		obj->SetAnimationSet(ani_set);
+		objects.push_back(obj);
+	}
+	if (objItem != NULL)
+	{
+		objItem->SetPosition(x, y);
+		//obj->SetXYStartLive(x, y);
+		LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
-	obj->SetAnimationSet(ani_set);
-	objects.push_back(obj);
+		objItem->SetAnimationSet(ani_set);
+		Itemobjects.push_back(objItem);
+	}
 }
 
 void CPlayScene::Load()
@@ -248,6 +312,12 @@ void CPlayScene::Load()
 		if (line == "[OBJECTS]") { 
 			section = SCENE_SECTION_OBJECTS; continue; }
 		if (line == "[TILE_MAP_DATA]") { section = SCENE_SECTION_TILEMAP_DATA; continue; }
+		if (line == "[EFFECT]") {
+			section = SCENE_SECTION_EFFECT; continue;
+		}
+		if (line == "[STATUS_BAR]") {
+			section = SCENE_SECTION_STATUS_BAR; continue;
+		}
 		if (line[0] == '[') { section = SCENE_SECTION_UNKNOWN; continue; }	
 
 
@@ -262,6 +332,8 @@ void CPlayScene::Load()
 			case SCENE_SECTION_ANIMATION_SETS: _ParseSection_ANIMATION_SETS(line); break;
 			case SCENE_SECTION_OBJECTS: _ParseSection_OBJECTS(line); break;
 			case SCENE_SECTION_TILEMAP_DATA: _ParseSection_TILEMAP_DATA(line); break;
+			case SCENE_SECTION_EFFECT: _ParseSection_EFFECT(line); break;
+			case SCENE_SECTION_STATUS_BAR: _ParseSection_STATUS_BAR(line); break;
 		}
 	}
 
@@ -312,26 +384,49 @@ void CPlayScene::Update(DWORD dt)
 	if (player == NULL) return; 
 
 	// Update camera to follow mario
-	float cx, cy;
-	player->GetPosition(cx, cy);
-	CGame *game = CGame::GetInstance();
-	if (cy <= ONGROUND_Y - game->GetScreenHeight()*0.98)game->SetCamPosY(cy- game->GetScreenHeight() *0.02);
-	else game->SetCamPosY(ONGROUND_Y- game->GetScreenHeight());
-	if (cx <= game->GetScreenWidth() / 2)
-		game->SetCamPosX(0.0f);
-	else if(cx >= mapWidth - game->GetScreenWidth()/2 -20) game->SetCamPosX(mapWidth - game->GetScreenWidth()-20);
-	else game->SetCamPosX(cx - game->GetScreenWidth() / 2);
-
+	if (player->GetLevel() != MARIO_LEVEL_MINI)
+	{
+		float cx, cy;
+		player->GetPosition(cx, cy);
+		CGame* game = CGame::GetInstance();
+		if (cy <= ONGROUND_Y - game->GetScreenHeight() * 0.8)game->SetCamPosY(cy - game->GetScreenHeight() * 0.20 + 30);
+		else game->SetCamPosY(ONGROUND_Y - game->GetScreenHeight() + 30);
+		if (cx <= game->GetScreenWidth() / 2)
+			game->SetCamPosX(0.0f);
+		else if (cx >= mapWidth - game->GetScreenWidth() / 2 - 20) game->SetCamPosX(mapWidth - game->GetScreenWidth() - 20);
+		else game->SetCamPosX(cx - game->GetScreenWidth() / 2);
+	}
+	// statusbar pos
+	float XStatusBar = CGame::GetInstance()->GetCamPosX() + 5;
+	float YStatusBar = CGame::GetInstance()->GetCamPosY() + CGame::GetInstance()->GetScreenHeight() - 30;
+	statusBar->Update(dt, XStatusBar, YStatusBar);
 }
+bool CheckObjInScreen(LPGAMEOBJECT Obj) {
+	float XLeftScreen = CGame::GetInstance()->GetCamPosX() - 48;
+	float XRightScreen = CGame::GetInstance()->GetCamPosX() + CGame::GetInstance()->GetScreenWidth() + 48;
+	float YTopScreen = CGame::GetInstance()->GetCamPosY() - 48;
+	float YBotScreen = CGame::GetInstance()->GetCamPosY() + CGame::GetInstance()->GetScreenHeight() + 48;
 
+	if (Obj->x < XLeftScreen || Obj->x > XRightScreen)
+		return false;
+	if (Obj->y < YTopScreen || Obj->y > YBotScreen)
+		return false;
+	return true;
+}
 void CPlayScene::Render()
 {
 	tileMap->Draw();
-	/*for (int i = 0; i < fires.size(); i++)
-		fires[i]->Render();*/
+
 	for (int i = 1; i < objects.size(); i++)
+	{
 		objects[i]->Render();
+	}
+	for (size_t i = 0; i < Itemobjects.size(); i++)
+	{
+		Itemobjects[i]->Render();
+	}
 	objects[0]->Render();
+	statusBar->Render();
 }
 
 /*
@@ -341,12 +436,23 @@ void CPlayScene::Unload()
 {
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
-
 	objects.clear();
+	for (int i = 0; i < Itemobjects.size(); i++)
+		delete Itemobjects[i];
+	Itemobjects.clear();
+	//if(CGame::GetInstance()->Getcurrent_scene() == 4)
+
 	player = NULL;
 
+	delete tileMap;
+	tileMap = NULL;
+	delete statusBar;
+	statusBar = NULL;
+	delete ItemSwitch;
+	ItemSwitch = NULL;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
+
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
@@ -424,20 +530,41 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 		if (mario->GetState() == MARIO_STATE_DIE) return;
 		if (mario->isWaitingForAni)
 			return;
-		if ((mario->vx > 0 && game->IsKeyDown(DIK_LEFT)) || (mario->vx < 0 && game->IsKeyDown(DIK_RIGHT)))
+		if ((mario->vx > 0 && game->IsKeyDown(DIK_LEFT)) || (mario->vx < 0 && game->IsKeyDown(DIK_RIGHT))&& mario->GetLevel()!=MARIO_LEVEL_MINI)
 			{
 				mario->SetState(MARIO_STATE_STOP);
 			}
 		else if (game->IsKeyDown(DIK_DOWN))
-			mario->SetState(MARIO_STATE_CROUCH);
-		else if (game->IsKeyDown(DIK_LSHIFT) && game->IsKeyDown(DIK_LEFT))
+		{
+			if (mario->GetLevel() != MARIO_LEVEL_MINI)
+				mario->SetState(MARIO_STATE_CROUCH);
+			else
+				mario->SetState(MARIO_MINI_STATE_DOWN);
+		}
+		else if (game->IsKeyDown(DIK_UP))
+		{
+			if (mario->GetLevel() == MARIO_LEVEL_MINI)
+				mario->SetState(MARIO_MINI_STATE_UP);
+		}
+		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_LEFT) && mario->GetLevel() != MARIO_LEVEL_MINI)
 			mario->SetState(MARIO_STATE_RUNNING_LEFT);
-		else if (game->IsKeyDown(DIK_LSHIFT) && game->IsKeyDown(DIK_RIGHT))
+		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_RIGHT) && mario->GetLevel() != MARIO_LEVEL_MINI)
 			mario->SetState(MARIO_STATE_RUNNING_RIGHT);
 		else if (game->IsKeyDown(DIK_RIGHT))
-			mario->SetState(MARIO_STATE_WALKING_RIGHT);
+		{
+			if (mario->GetLevel() != MARIO_LEVEL_MINI)
+				mario->SetState(MARIO_STATE_WALKING_RIGHT);
+			else
+				mario->SetState(MARIO_MINI_STATE_RIGHT);
+		}
+		
 		else if (game->IsKeyDown(DIK_LEFT))
-			mario->SetState(MARIO_STATE_WALKING_LEFT);
+		{
+			if (mario->GetLevel() != MARIO_LEVEL_MINI)
+				mario->SetState(MARIO_STATE_WALKING_LEFT);
+			else
+				mario->SetState(MARIO_MINI_STATE_LEFT);
+		}
 		else
 			mario->SetState(MARIO_STATE_IDLE);
 	
