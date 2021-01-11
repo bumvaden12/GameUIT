@@ -8,9 +8,11 @@
 #define MARIO_MAX_SPEED			0.15f
 //0.1f
 #define MARIO_TAILDROP_DISTANCE	15
-#define MARIO_FLY_DISTANCE		15
+#define MARIO_FLY_DISTANCE		18
 #define MARIO_JUMP_ACCE			0.018f
-#define MARIO_FLY_ACCE			0.015f
+#define MARIO_FLY_ACCE			0.013f
+#define MARIO_START_TELEPORT_VY		0.001f
+#define MARIO_GRAVITY_TELEPORT		0.000015f
 #define MARIO_MIN_JUMP_HEIGHT 0.4f
 #define MARIO_MAX_JUMP_HEIGHT 50.0f
 #define MARIO_JUMP_DEFLECT_SPEED 0.2f
@@ -172,10 +174,12 @@ public:bool onground = false;
 	bool isFireAttacking = false;
 	bool StartTeleport;
 	DWORD untouchable_start;
+	bool IsWaitingTeleport;
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 
 public: 
+	bool CheckMarioInScreen();
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT> *colliable_objects = NULL);
 	virtual void Render();

@@ -13,9 +13,7 @@
 80	textures\StatusBar.png	255	0	255
 81	textures\PowerState.png	175	232	226
 82	textures\BackGroundStatusBar.png	255	255	255
-[TILE_MAP_DATA]
-1	tilemap\tile_map.png	tilemap\tile_map.txt	10	11	42	177	16	16
-# id	left	top	right	bottom	texture_id
+
 [SPRITES]
 # BIG MARIO 
 # idle right
@@ -707,5 +705,5 @@
 50	356	36	1	366	56	1
 [STATUS_BAR]
 100000	100001	100010	100020
-[TILEMAP]
-900000	tilemap\mini_map_1.png	tilemap\mini_map_1.txt	16	1	12	32	16	16
+[TILE_MAP_DATA]
+900000	tilemap\mini_map_1.png	tilemap\mini_map_1.txt	16	1	11	33	16	16

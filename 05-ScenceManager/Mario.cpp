@@ -44,29 +44,37 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		if (state == MARIO_STATE_TAIL_ATTACK)
 			tail->Update(dt, coObjects);
 		// jump
-		if (allow_jump)
-		{
-			vy = -MARIO_JUMP_ACCE * dt;
-			onground = false;
-		}
 		if (allow_fly == true && (fly_y - y < MARIO_FLY_DISTANCE))
 		{
 			vy = -MARIO_FLY_ACCE * dt;
+			onground = false;
+		}
+		
+		else if (allow_jump)
+		{
+			vy = -MARIO_JUMP_ACCE * dt;
 			onground = false;
 		}
 		else
 		{
 			allow_fly = false;
 		}
+	
 		if (istaildropping == true && (vy > 0) && (y - drop_y < MARIO_TAILDROP_DISTANCE))
 		{
 			vy = MARIO_TAILDROP_SPEED * dt;
 		}
 		else
 		{
-			istaildropping = false;
-			isdropping = true;
-			vy += MARIO_GRAVITY * dt;
+			if (!StartTeleport)
+			{
+				vy += MARIO_GRAVITY * dt;
+				istaildropping = false;
+				isdropping = true;
+			}
+			else if(StartTeleport && !allow_fly)
+				vy += MARIO_GRAVITY_TELEPORT * dt;
+		
 		}
 		if (stand_y - y > MARIO_MAX_JUMP_HEIGHT)
 		{
@@ -540,8 +548,79 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		//DebugOut(L"allowfly %d\n", allow_fly);
 		// clean up collision events
 		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
-	}
 
+
+		vector<LPGAMEOBJECT> coEventsResultColl;
+		coEventsResultColl.clear();
+		if (state != MARIO_STATE_DIE && this != NULL)
+			CalCollisions(coObjects, coEventsResultColl);
+		if (state == MARIO_STATE_DIE && level == MARIO_LEVEL_SMALL && !CheckMarioInScreen())
+		{
+			CGame::GetInstance()->SwitchScene(SCENCE_START);				// scence Start
+			return;
+		}
+		if (coEventsResultColl.size() != 0)
+		{
+			for (UINT i = 0; i < coEventsResultColl.size(); i++)
+			{
+				LPGAMEOBJECT e = coEventsResultColl[i];
+				if (dynamic_cast<CPortal*>(e))
+				{
+					CPortal* p = dynamic_cast<CPortal*>(e);
+					if (CGame::GetInstance()->Getcurrent_scene() == SCENCE_START && StartTeleport)
+					{
+						CGame::GetInstance()->SwitchScene(p->GetSceneId());
+						StartTeleport = false;
+						return;			// khong return thi coObjects duoi se co 1 vai Obj = NULL
+					}
+					if (CGame::GetInstance()->Getcurrent_scene() != SCENCE_START)
+					{
+						IsWaitingTeleport = true;
+						if (StartTeleport) {
+							this->vy = MARIO_START_TELEPORT_VY * dt;
+						}
+						if (this->y > p->y) {
+							this->x = 2336;
+							this->y = 330;
+							CGame::GetInstance()->SwitchScene(p->GetSceneId());
+						}
+						return;
+					}
+				}
+				else if (dynamic_cast<fire_plant*>(e)) {
+					if (untouchable == 0)
+					{
+						if (level > MARIO_LEVEL_BIG)
+						{
+							SetLevel(MARIO_LEVEL_BIG);
+							this->y -= 1;		// khong bi rot xuong Coobj
+							StartUntouchable();
+						}
+						else if (level > MARIO_LEVEL_SMALL)
+						{
+							level = MARIO_LEVEL_SMALL;
+							StartUntouchable();
+						}
+						else
+							SetState(MARIO_STATE_DIE);
+					}
+				}
+			}
+		}
+	}
+	bool CMario::CheckMarioInScreen()
+	{
+		float XLeftScreen = CGame::GetInstance()->GetCamPosX() - 48;
+		float XRightScreen = CGame::GetInstance()->GetCamPosX() + CGame::GetInstance()->GetScreenWidth() + 48;
+		float YTopScreen = CGame::GetInstance()->GetCamPosY() - 48;
+		float YBotScreen = CGame::GetInstance()->GetCamPosY() + CGame::GetInstance()->GetScreenHeight() + 48;
+
+		if (this->x < XLeftScreen || this->x > XRightScreen)
+			return false;
+		if (this->y < YTopScreen || this->y > YBotScreen)
+			return false;
+		return true;
+	}
 void CMario::Render()
 {
 	int ani = -1;
@@ -727,14 +806,14 @@ void CMario::SetState(int state)
 			nx = -1;
 			break;
 		case MARIO_STATE_RUNNING_LEFT:
-			vx -= MARIO_ACCE;
+			if(!maxspeed)vx -= MARIO_ACCE;
 			if (vx < -MARIO_MAX_SPEED)
 				vx = -MARIO_MAX_SPEED;
 			last_vx = vx;
 			nx = -1;
 			break;
 		case MARIO_STATE_RUNNING_RIGHT:
-			vx += MARIO_ACCE;
+			if (!maxspeed)vx += MARIO_ACCE;
 			if (vx > MARIO_MAX_SPEED)
 				vx = MARIO_MAX_SPEED;
 			last_vx = vx;
@@ -749,6 +828,16 @@ void CMario::SetState(int state)
 			break;
 		case MARIO_STATE_FLYING:
 			allow_fly = true;
+			if (nx < 0)
+			{
+				ResetAni(MARIO_ANI_TAIL_FLYING_LEFT);
+				isWaitingForAni = true;
+			}
+			else if (nx > 0)
+			{
+				ResetAni(MARIO_ANI_TAIL_FLYING_RIGHT);
+				isWaitingForAni = true;
+			}
 			break;
 		case MARIO_STATE_DROP:
 			allow_jump = false;
@@ -838,8 +927,16 @@ void CMario::SetState(int state)
 			/*	isFireAttacking = true;*/
 			break;
 		case MARIO_STATE_CROUCH:
-			if (onground)crouch = true;
-			vx = 0;
+			if (!IsWaitingTeleport) {
+				if (onground)
+				{
+					crouch = true;
+					vx = 0;
+				}
+			}
+			else
+			if (IsWaitingTeleport)
+				StartTeleport = true;
 			break;
 		case MARIO_STATE_UNCROUCH:
 			break;
@@ -936,7 +1033,7 @@ void CMario::AttackWithFire(fire* Fire)
 }
 void CMario::CheckForAniEnd()
 {
-	if (level == MARIO_LEVEL_TAIL)
+	if (level == MARIO_LEVEL_TAIL )
 	{
 		if (isWaitingForAni)
 		{
@@ -947,11 +1044,37 @@ void CMario::CheckForAniEnd()
 					isWaitingForAni = false;
 
 				}
+			
 			}
 			else if (nx == -1)
 			{
 				if (animation_set->at(MARIO_ANI_TAIL_ATTACK_LEFT)->IsOver())
 					isWaitingForAni = false;
+				
+			}
+		}
+	}
+	 if (level == MARIO_LEVEL_TAIL && allow_fly)
+	{
+		if (isWaitingForAni)
+		{
+			if (nx == 1)
+			{
+			
+				 if (animation_set->at(MARIO_ANI_TAIL_FLYING_RIGHT)->IsOver())
+				{
+					isWaitingForAni = false;
+
+				}
+			}
+			else if (nx == -1)
+			{
+				
+				 if (animation_set->at(MARIO_ANI_TAIL_FLYING_LEFT)->IsOver())
+				{
+					isWaitingForAni = false;
+
+				}
 			}
 		}
 	}

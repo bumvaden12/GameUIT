@@ -384,18 +384,35 @@ void CPlayScene::Update(DWORD dt)
 	if (player == NULL) return; 
 
 	// Update camera to follow mario
-	if (player->GetLevel() != MARIO_LEVEL_MINI)
+	CGame* game = CGame::GetInstance();
+	float cx, cy;
+	int CurSecene = game->Getcurrent_scene();
+	if (player->GetLevel() != MARIO_LEVEL_MINI&& CurSecene == 1)
 	{
-		float cx, cy;
+		
 		player->GetPosition(cx, cy);
-		CGame* game = CGame::GetInstance();
+		
 		if (cy <= ONGROUND_Y - game->GetScreenHeight() * 0.8)game->SetCamPosY(cy - game->GetScreenHeight() * 0.20 + 30);
 		else game->SetCamPosY(ONGROUND_Y - game->GetScreenHeight() + 30);
 		if (cx <= game->GetScreenWidth() / 2)
 			game->SetCamPosX(0.0f);
 		else if (cx >= mapWidth - game->GetScreenWidth() / 2 - 20) game->SetCamPosX(mapWidth - game->GetScreenWidth() - 20);
 		else game->SetCamPosX(cx - game->GetScreenWidth() / 2);
+		
 	}
+	else if (CurSecene == 3)
+	{
+		cx = 0.0f;
+		cy = 0.0f;
+		CGame::GetInstance()->SetCamPos(cx, cy);
+	}
+	else if (CurSecene == 4)
+	{
+		cx = 95.0f;
+		cy = 8.0f;
+		CGame::GetInstance()->SetCamPos(cx, cy);
+	}
+	
 	// statusbar pos
 	float XStatusBar = CGame::GetInstance()->GetCamPosX() + 5;
 	float YStatusBar = CGame::GetInstance()->GetCamPosY() + CGame::GetInstance()->GetScreenHeight() - 30;

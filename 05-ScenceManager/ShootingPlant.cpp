@@ -110,7 +110,7 @@ void ShootingPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 void ShootingPlant::Render()
 {
-	int ani;
+	int ani=-1;
 	switch (PosAttack)
 	{
 	case MARIO_LEFT_TOP_TOP	:	
@@ -140,6 +140,7 @@ void ShootingPlant::Render()
 	}
 
 	fire->Render();
+	if(ani!=-1)
  	animation_set->at(ani)->Render(x, y);
 
 	//RenderBoundi	ngBox();

@@ -41,6 +41,7 @@
 #define ITEM_ANI_SWITCH_OFF			3
 #define ITEM_ANI_MONEY_IDLE			4
 #define ITEM_ANI_MUSHROOM_GREEN		5
+#define ITEM_ANI_MUSHROOM_RED		6
 class Items : public CGameObject
 {
 public:

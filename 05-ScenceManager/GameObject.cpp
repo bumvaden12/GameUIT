@@ -38,6 +38,7 @@ void CGameObject::CalCollisions(vector<LPGAMEOBJECT>* coObjects, vector<LPGAMEOB
 	{
 		LPGAMEOBJECT obj = coObjects->at(i);
 			/*	DebugOut(L"obj %d \n", obj);*/
+		if(obj!=NULL&&this!=NULL)
 			if (this->IsColidingAABB(obj))
 			{
 				coEventsResult.push_back(coObjects->at(i));
