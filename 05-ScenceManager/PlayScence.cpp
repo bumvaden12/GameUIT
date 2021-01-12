@@ -488,6 +488,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_3:
 		mario->Reset3();
 		break;
+	case DIK_0:
+		mario->SetPosition(2266,70);
+		break;
 	case DIK_SPACE :
 		DebugOut(L"key space %d \n");
 		if (mario->maxspeed && !mario->onground&& mario->level == MARIO_LEVEL_TAIL)
@@ -528,8 +531,11 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		mario->SetState(MARIO_STATE_DROP);
 		break;
 	case DIK_DOWN:
+	{
+		if(mario->IsWaitingTeleport == false)
 		mario->SetState(MARIO_STATE_UNCROUCH);
 		break;
+	}
 	case DIK_D:
 		if (mario->isCarrying)
 		{

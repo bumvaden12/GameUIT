@@ -6,7 +6,8 @@
 #define KOOPAS_GRAVITY			0.0018f
 
 #define KOOPAS_WALKING_SPEED				0.04f
-#define KOOPAS_PARATROOPA_WALKING_SPEED		0.01f
+#define KOOPAS_PARATROOPA_WALKING_SPEED		0.02f
+#define KOOPAS_PARATROOPA_JUMP_SPEED		0.03f
 #define KOOPAS_ROTATORY_SPEED	0.2f
 #define KOOPAS_DIE_DEFLECT_SPEED 0.02f
 #define KOOPAS_DIE				0.1f
@@ -57,6 +58,8 @@ public:
 	CKoopas(int TypeKoopas);
 	virtual void SetState(int state);
 	void BeingCarry(LPGAMEOBJECT user);
+	int GetLevel() { return TypeKoopas; }
+	void SetLevel(int level) { TypeKoopas = level; }
 	void StartSleep() { Sleep = 1; Sleep_start = GetTickCount(); }
 	void StartPrepareWakeUp() { PrepareWakeUp = 1; PrepareWakeUp_start = GetTickCount(); }
 };

@@ -6,7 +6,6 @@
 #include "Game.h"
 #include "Brick.h"
 #include "Goomba.h"
-#include "Portal.h"
 #include "InviBrick.h"
 #include "Koopas.h"
 #include "platform.h"
@@ -14,6 +13,7 @@
 #include "ShinyBrick.h"
 #include "Tunnel.h"
 #include "WingedGoomba.h"
+#include "Portal.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -66,13 +66,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		}
 		else
 		{
-			if (!StartTeleport)
+			if ( !allow_fly && !StartTeleport)
 			{
 				vy += MARIO_GRAVITY * dt;
 				istaildropping = false;
 				isdropping = true;
 			}
-			else if(StartTeleport && !allow_fly)
+			else if(StartTeleport)
 				vy += MARIO_GRAVITY_TELEPORT * dt;
 		
 		}
@@ -141,7 +141,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			float min_tx, min_ty, nx = 0, ny;
 			float rdx = 0;
 			float rdy = 0;
-
+			last_vy = vy;
 			// TODO: This is a very ugly designed function!!!!
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
@@ -430,7 +430,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				{
 					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 					// jump on top >> kill Goomba and deflect a bit 
-					if (e->ny < 0 && koopas->GetState() == KOOPAS_STATE_WALKING)
+					if (e->ny < 0 && koopas->GetLevel() == KOOPAS_TYPE_KOOPA_PARATROOPA_GREEN)
+					{
+						koopas->SetLevel(KOOPAS_TYPE_KOOPA_TROOPA_GREEN);
+					}
+					else if (e->ny < 0 && koopas->GetState() == KOOPAS_STATE_WALKING)
 					{
 						if (koopas->GetState() != KOOPAS_STATE_DIE)
 						{
@@ -438,6 +442,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 							vy = -MARIO_JUMP_DEFLECT_SPEED;
 						}
 					}
+					
 					else if (e->nx != 0 && CGame::GetInstance()->IsKeyDown(DIK_D) && koopas->GetState() == KOOPAS_STATE_DIE)
 					{
 						isCarrying = true;
@@ -539,8 +544,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				}
 				else if (dynamic_cast<CPortal*>(e->obj))
 				{
-					CPortal* p = dynamic_cast<CPortal*>(e->obj);
-					CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				vy = last_vy;
+				y += dy;
 				}
 			}
 		}
@@ -573,13 +578,32 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 						StartTeleport = false;
 						return;			// khong return thi coObjects duoi se co 1 vai Obj = NULL
 					}
-					if (CGame::GetInstance()->Getcurrent_scene() != SCENCE_START)
+					if (CGame::GetInstance()->Getcurrent_scene() == SCENCE_WORD_MAP_1)
 					{
+						/*if (!IsWaitingTeleport)
+							vy = 0;*/
 						IsWaitingTeleport = true;
 						if (StartTeleport) {
-							this->vy = MARIO_START_TELEPORT_VY * dt;
+							y += 0.4;
+						/*	this->vy = MARIO_START_TELEPORT_VY * dt;*/
 						}
-						if (this->y > p->y) {
+						if (this->y > p->y && StartTeleport) {
+							this->x = 2336;
+							this->y = 330;
+							CGame::GetInstance()->SwitchScene(p->GetSceneId());
+						}
+						return;
+					}
+					else if (CGame::GetInstance()->Getcurrent_scene() == SCENCE_WORD_MAP_1_1)
+					{
+						/*if (!IsWaitingTeleport)
+							vy = 0;*/
+						IsWaitingTeleport = true;
+						if (StartTeleport) {
+							y -= 0.4;
+							/*	this->vy = MARIO_START_TELEPORT_VY * dt;*/
+						}
+						if (this->y < p->y && StartTeleport) {
 							this->x = 2336;
 							this->y = 330;
 							CGame::GetInstance()->SwitchScene(p->GetSceneId());
@@ -665,8 +689,8 @@ void CMario::Render()
 			else if (isdropping && !onground && nx > 0)ani = MARIO_ANI_FIRE_DROP_RIGHT;
 			else if (state == MARIO_STATE_STOP && nx < 0) ani = MARIO_ANI_FIRE_STOP_LEFT;
 			else if (state == MARIO_STATE_STOP && nx > 0) ani = MARIO_ANI_FIRE_STOP_RIGHT;
-			else if (state == MARIO_STATE_CROUCH && nx < 0) ani = MARIO_ANI_FIRE_CROUCH_LEFT;
-			else if (state == MARIO_STATE_CROUCH && nx > 0) ani = MARIO_ANI_FIRE_CROUCH_RIGHT;
+			else if (!IsWaitingTeleport && state == MARIO_STATE_CROUCH && nx < 0) ani = MARIO_ANI_FIRE_CROUCH_LEFT;
+			else if (!IsWaitingTeleport && state == MARIO_STATE_CROUCH && nx > 0) ani = MARIO_ANI_FIRE_CROUCH_RIGHT;
 			else if (vx > 0)
 				ani = MARIO_ANI_FIRE_WALKING_RIGHT;
 			else if (vx < 0) ani = MARIO_ANI_FIRE_WALKING_LEFT;
@@ -721,8 +745,8 @@ void CMario::Render()
 			else if (isdropping &&!onground &&nx > 0)ani = MARIO_ANI_TAIL_DROP_RIGHT;
 			else if (state == MARIO_STATE_STOP && nx < 0) ani = MARIO_ANI_TAIL_STOP_LEFT;
 			else if (state == MARIO_STATE_STOP && nx > 0) ani = MARIO_ANI_TAIL_STOP_RIGHT;
-			else if (state == MARIO_STATE_CROUCH && nx < 0) ani = MARIO_ANI_TAIL_CROUCH_LEFT;
-			else if (state == MARIO_STATE_CROUCH && nx > 0) ani = MARIO_ANI_TAIL_CROUCH_RIGHT;
+			else if (!IsWaitingTeleport && state == MARIO_STATE_CROUCH && nx < 0) ani = MARIO_ANI_TAIL_CROUCH_LEFT;
+			else if (!IsWaitingTeleport && state == MARIO_STATE_CROUCH && nx > 0) ani = MARIO_ANI_TAIL_CROUCH_RIGHT;
 			else if (vx > 0)
 				ani = MARIO_ANI_TAIL_WALKING_RIGHT;
 			else if (vx < 0) ani = MARIO_ANI_TAIL_WALKING_LEFT;
@@ -927,7 +951,8 @@ void CMario::SetState(int state)
 			/*	isFireAttacking = true;*/
 			break;
 		case MARIO_STATE_CROUCH:
-			if (!IsWaitingTeleport) {
+			if (!IsWaitingTeleport)
+			{
 				if (onground)
 				{
 					crouch = true;
@@ -973,7 +998,7 @@ void CMario::GetBoundingBox(float &left, float &top, float &right, float &bottom
 	}
 	else if (level == MARIO_LEVEL_FIRE)
 	{
-		if (state == MARIO_STATE_CROUCH)
+		if (state == MARIO_STATE_CROUCH && !IsWaitingTeleport)
 		{
 			right = (x+	10 + MARIO_FIRE_CROUCH_BBOX_WIDTH);
 			bottom = y + MARIO_FIRE_CROUCH_BBOX_HEIGHT;

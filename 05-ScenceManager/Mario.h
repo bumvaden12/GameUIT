@@ -149,6 +149,7 @@ class CMario : public CGameObject
 	CKoopas* koopas_carry;
 	float mario_x;
 	float mario_y;
+	float last_vy = 0;
 	float last_vx = 0;
 	float stand_y = 0;
 	bool is_tail_attacking = false;
@@ -174,7 +175,7 @@ public:bool onground = false;
 	bool isFireAttacking = false;
 	bool StartTeleport;
 	DWORD untouchable_start;
-	bool IsWaitingTeleport;
+public: bool IsWaitingTeleport = false;
 
 	float start_x;			// initial position of Mario at scene
 	float start_y; 

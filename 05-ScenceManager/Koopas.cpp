@@ -25,6 +25,10 @@ void CKoopas::GetBoundingBox(float &left, float &top, float &right, float &botto
 	{
 		bottom = y + KOOPAS_BBOX_HEIGHT_DIE - KOOPAS_BBOX_CHANGE ;
 	}
+	else if (state == KOOPAS_STATE_PREPARE_WAKE_UP)
+	{
+		bottom = y + KOOPAS_BBOX_HEIGHT_DIE - KOOPAS_BBOX_CHANGE;
+	}
 	else if (state == KOOPAS_STATE_SPINNING)
 	{
 		bottom = y + KOOPAS_BBOX_HEIGHT_DIE - KOOPAS_BBOX_CHANGE;
@@ -51,14 +55,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				x += 3.0f;
 			ShakingLeft = !ShakingLeft;
 		}
-		if (GetTickCount() - Sleep_start > KOOPAS_TIME_SLEEP && state == KOOPAS_STATE_DIE)
+		if (GetTickCount64() - Sleep_start > KOOPAS_TIME_SLEEP && state == KOOPAS_STATE_DIE)
 		{
 			Sleep_start = 0;
 			Sleep = 0;
 			state = KOOPAS_STATE_PREPARE_WAKE_UP;
 			StartPrepareWakeUp();
 		}
-		if (GetTickCount() - PrepareWakeUp_start > KOOPAS_TIME_WAKE_UP && state == KOOPAS_STATE_PREPARE_WAKE_UP)
+		if (GetTickCount64() - PrepareWakeUp_start > KOOPAS_TIME_WAKE_UP && state == KOOPAS_STATE_PREPARE_WAKE_UP)
 		{
 			PrepareWakeUp_start = 0;
 			PrepareWakeUp = 0;
@@ -130,11 +134,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		
 			if (dynamic_cast<platform*>(e->obj)) {
 				if (TypeKoopas == KOOPAS_TYPE_KOOPA_PARATROOPA_GREEN)
-					vy = -KOOPAS_PARATROOPA_WALKING_SPEED * dt;
+					vy = -KOOPAS_PARATROOPA_JUMP_SPEED * dt;
 			}
 			if (dynamic_cast<InviBrick*>(e->obj)) {
 				if (TypeKoopas == KOOPAS_TYPE_KOOPA_PARATROOPA_GREEN)
-					vy = -KOOPAS_PARATROOPA_WALKING_SPEED * dt;
+					vy = -KOOPAS_PARATROOPA_JUMP_SPEED * dt;
 			}
 			if (dynamic_cast<QBrick*>(e->obj) && state == KOOPAS_STATE_SPINNING)
 			{
@@ -228,6 +232,7 @@ void CKoopas::Render()
 		else if (vx <= 0) ani = KOOPAS_ANI_WALKING_LEFT;
 	}
 	animation_set->at(ani)->Render(x, y);
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
