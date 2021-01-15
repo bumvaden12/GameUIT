@@ -3,14 +3,14 @@
 #include "Mario.h"
 #include "GameObject.h"
 #include <string>
-#define SPEED_X_TIER_1 0.1125f
-#define SPEED_X_TIER_2 0.125f
-#define SPEED_X_TIER_3 0.1375f
-#define SPEED_X_TIER_4 0.15f
-#define SPEED_X_TIER_5 0.1625f
-#define SPEED_X_TIER_6 0.175f
-#define SPEED_X_TIER_7 0.1875f
-#define SPEED_X_TIER_8 0.2f
+#define SPEED_X_TIER_1 0.01f
+#define SPEED_X_TIER_2 0.02f
+#define SPEED_X_TIER_3 0.04f
+#define SPEED_X_TIER_4 0.06f
+#define SPEED_X_TIER_5 0.08f
+#define SPEED_X_TIER_6 0.10f
+#define SPEED_X_TIER_7 0.12f
+#define SPEED_X_TIER_8 0.15f
 
 #define X_DISTANCE_PMETER		52
 #define Y_DISTANCE_PMETER		7

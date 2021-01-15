@@ -213,7 +213,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		int TypeKoopas = atoi(tokens[4].c_str());
 		obj = new CKoopas(TypeKoopas);
 	}break;
-	case OBJECT_TYPE_INVIBRICK: obj = new InviBrick(); break;
+	case OBJECT_TYPE_INVIBRICK: 
+	{
+		float Width = atoi(tokens[4].c_str());
+		obj = new Line(Width);
+	}break;
 	case OBJECT_TYPE_FIRE:	obj = new fire(); break;
 	case OBJECT_TYPE_PLATFORM: obj = new platform(); break;
 	case OBJECT_TYPE_QBRICK: obj = new QBrick(); break;
@@ -433,7 +437,7 @@ bool CheckObjInScreen(LPGAMEOBJECT Obj) {
 void CPlayScene::Render()
 {
 	tileMap->Draw();
-
+	
 	for (int i = 1; i < objects.size(); i++)
 	{
 		objects[i]->Render();
@@ -569,9 +573,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE *states)
 			if (mario->GetLevel() == MARIO_LEVEL_MINI)
 				mario->SetState(MARIO_MINI_STATE_UP);
 		}
-		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_LEFT) && mario->GetLevel() != MARIO_LEVEL_MINI)
+		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_LEFT) && mario->GetLevel() != MARIO_LEVEL_MINI && !mario->isCarrying)
 			mario->SetState(MARIO_STATE_RUNNING_LEFT);
-		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_RIGHT) && mario->GetLevel() != MARIO_LEVEL_MINI)
+		else if (game->IsKeyDown(DIK_D) && game->IsKeyDown(DIK_RIGHT) && mario->GetLevel() != MARIO_LEVEL_MINI && !mario->isCarrying)
 			mario->SetState(MARIO_STATE_RUNNING_RIGHT);
 		else if (game->IsKeyDown(DIK_RIGHT))
 		{

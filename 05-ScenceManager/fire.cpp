@@ -3,7 +3,6 @@
 #include "Mario.h"
 #include "Goomba.h"
 #include "Koopas.h"
-#include "InviBrick.h"
 #include "Brick.h"
 #include "Game.h"
 #include "platform.h"
@@ -11,6 +10,7 @@
 #include "Tunnel.h"
 #include "QuestionBrick.h"
 #include "WingedGoomba.h"
+#include "ShinyBrick.h"
 
 fire::fire(float x, float y):CGameObject()
 {
@@ -119,47 +119,34 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (dynamic_cast<CBrick*>(e->obj))
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-					if (e->ny < 0)
-					{
-					}
-					if (e->ny > 0)
-					{
-					}
-					if (e->nx != 0)
-					{
+					
 						state = FIRE_STATE_WAITING;
 						allow_fire = false;
-					}
+				}
+				else if (dynamic_cast<SBrick*>(e->obj))
+				{
+					SBrick* brick = dynamic_cast<SBrick*>(e->obj);
+					brick->broke=true;
+
+						state = FIRE_STATE_WAITING;
+						allow_fire = false;
+					
 				}
 				else if (dynamic_cast<QBrick*>(e->obj))
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-					if (e->ny < 0)
-					{
-					}
-					if (e->ny > 0)
-					{
-					}
-					if (e->nx != 0)
-					{
+				
 						state = FIRE_STATE_WAITING;
 						allow_fire = false;
-					}
+					
 				}
 				else if (dynamic_cast<ShootingPlant*>(e->obj))
 				{
 					ShootingPlant* brick = dynamic_cast<ShootingPlant*>(e->obj);
-					if (e->ny < 0)
-					{
-					}
-					if (e->ny > 0)
-					{
-					}
-					if (e->nx != 0)
-					{
+					
 						state = FIRE_STATE_WAITING;
 						allow_fire = false;
-					}
+					
 				}
 				else if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
 				{
@@ -248,9 +235,9 @@ void fire::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						allow_fire = false;
 					
 				}
-				else if (dynamic_cast<InviBrick*>(e->obj))
+				else if (dynamic_cast<Line*>(e->obj))
 				{
-					InviBrick* brick = dynamic_cast<InviBrick*>(e->obj);
+					Line* brick = dynamic_cast<Line*>(e->obj);
 					if (e->ny < 0)
 					{
 					}

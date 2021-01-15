@@ -25,27 +25,30 @@ void QBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 void QBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-	if (start_moving_up == true)
+	if (!disabled)
 	{
-		vy = -0.005 * dt;
-	}
-	if (base_y - y > 7 && start_moving_up == true)
-	{
-		start_moving_up = false;
-		start_moving_down = true;
-	}
-	if (start_moving_down == true)
+		if (start_moving_up == true)
+		{
+			vy = -0.005 * dt;
+		}
+		if (base_y - y > 7 && start_moving_up == true)
+		{
+			start_moving_up = false;
+			start_moving_down = true;
+		}
+		if (start_moving_down == true)
 		{
 			vy = 0.005 * dt;
 		}
-	if (y  > base_y  && start_moving_down == true)
-	{
-		start_moving_down = false;
+		if (y > base_y && start_moving_down == true)
+		{
+			start_moving_down = false;
 			vy = 0;
-			y = base_y;
+			y = base_y-1;
 			disabled = true;
+		}
+		y += dy;
 	}
-	y += dy;
 
 }
 void QBrick::GetHit()

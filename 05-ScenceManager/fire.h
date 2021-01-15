@@ -1,9 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "Utils.h"
-#define FIRE_FOWARD_SPEED	0.15f
-#define FIRE_JUMP_SPEED		0.1f
-#define FIRE_JUMP_LIMIT		8.0f
+#define FIRE_FOWARD_SPEED	0.09f
+#define FIRE_JUMP_SPEED		0.05f
+#define FIRE_JUMP_LIMIT		10.0f
 #define FIRE_STATE_WAITING	7100
 #define FIRE_STATE_BOUNCING	7200
 #define FIRE_STATE_EXPLODE	7300

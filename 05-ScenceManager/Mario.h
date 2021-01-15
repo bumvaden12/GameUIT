@@ -19,7 +19,7 @@
 #define MARIO_GRAVITY			0.0018f
 #define MARIO_TAILDROP_SPEED	0.002f
 #define MARIO_DIE_DEFLECT_SPEED	0.5f
-#define MARIO_ACCE				0.005f
+#define MARIO_ACCE				0.003f
 #define MARIO_STOP_ACCE			0.006f
 #define MARIO_ANTI_MOVE			0.002f
 #define MARIO_STATE_IDLE			0

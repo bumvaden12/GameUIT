@@ -33,13 +33,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 	coEvents.clear();
 	if (state != GOOMBA_STATE_DIE)
 	{
-		if (vx < 0 && x < 0) {
-			x = 0; vx = -vx;
-		}
-
-		if (vx > 0 && x > 290) {
-			x = 290; vx = -vx;
-		}
+		
 		CalcPotentialCollisions(coObjects, coEvents);
 	}
 	else
@@ -70,7 +64,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
-		if (nx != 0) vx = last_vx;
+		if (nx != 0) vx = -vx;
 		if (ny != 0)
 		{
 			vy = 0;

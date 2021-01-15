@@ -6,7 +6,7 @@
 #include "Goomba.h"
 #include "QuestionBrick.h"
 #include "ShinyBrick.h"
-#include "InviBrick.h"
+#include "WingedGoomba.h"
 
 CKoopas::CKoopas(int TypeKoopas)
 {
@@ -71,8 +71,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			vx = KOOPAS_WALKING_SPEED;
 		}
 	}
-	
-
 	if (vx < 0 && x < 0) {
 		x = 0; vx = -vx;
 	}
@@ -105,7 +103,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 		if (nx != 0)
 		{
 			vx = -vx;
-
 		}
 		if (ny != 0)
 		{
@@ -136,7 +133,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 				if (TypeKoopas == KOOPAS_TYPE_KOOPA_PARATROOPA_GREEN)
 					vy = -KOOPAS_PARATROOPA_JUMP_SPEED * dt;
 			}
-			if (dynamic_cast<InviBrick*>(e->obj)) {
+			if (dynamic_cast<Line*>(e->obj)) {
 				if (TypeKoopas == KOOPAS_TYPE_KOOPA_PARATROOPA_GREEN)
 					vy = -KOOPAS_PARATROOPA_JUMP_SPEED * dt;
 			}
@@ -183,6 +180,13 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT> *coObjects)
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 				goomba->SetState(GOOMBA_STATE_DIE);
+				x += dx;
+			}
+			if (dynamic_cast<WingedGoomba*>(e->obj) && state == KOOPAS_STATE_SPINNING)
+			{
+				WingedGoomba* goomba = dynamic_cast<WingedGoomba*>(e->obj);
+				goomba->SetState(GOOMBA_STATE_DIE);
+				x += dx;
 			}
 		}
 	}

@@ -4,6 +4,7 @@
 #include "Tunnel.h"
 #include "platform.h"
 #include "Utils.h"
+#include "Goomba.h"
 WingedGoomba::WingedGoomba()
 {
 	SetState(GOOMBA_STATE_WALKING);
@@ -99,7 +100,7 @@ void WingedGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.4f;
 
-		if (nx != 0) vx = last_vx;
+		if (nx != 0) vx = -vx;
 		if (ny != 0)
 		{
 			vy = 0;
@@ -127,6 +128,7 @@ void WingedGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 
 			}
+			
 			if (dynamic_cast<platform*>(e->obj))
 			{
 				if (e->nx != 0)

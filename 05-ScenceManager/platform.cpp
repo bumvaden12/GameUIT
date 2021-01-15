@@ -51,3 +51,22 @@ void Ground::GetBoundingBox(float& l, float& t, float& r, float& b)
 	r = x + Width;
 	b = y + GROUND_BBOX_HEIGHT;
 }
+
+Line::Line(float Width)
+{
+	this->Width = Width;
+}
+void Line::Render()
+{
+	RenderBoundingBox();
+}
+
+void Line::GetBoundingBox(float& l, float& t, float& r, float& b)
+{
+	l = x;
+	t = y;
+	r = x + Width;
+	b = y + LINE_BBOX_HEIGHT;
+	X_Left = l;
+	X_Right = r;
+}
